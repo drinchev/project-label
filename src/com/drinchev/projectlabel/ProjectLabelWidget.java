@@ -1,6 +1,5 @@
 package com.drinchev.projectlabel;
 
-import com.intellij.ide.ui.UISettings;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
@@ -15,7 +14,11 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
+import java.text.AttributedString;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget {
@@ -38,6 +41,8 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
                 RenderingHints.VALUE_ANTIALIAS_ON);
         HINTS.put(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
+        HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         HINTS.put(RenderingHints.KEY_FRACTIONALMETRICS,
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
@@ -97,7 +102,7 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     @Override
     @NotNull
     public String ID() {
-        return WIDGET_ID;
+        return WIDGET_ID + myProjectName;
     }
 
     @Override
@@ -111,8 +116,15 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
         GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Font[] fonts = e.getAllFonts();
         for (Font f : fonts) {
-            if (Objects.equals(f.getFontName(), "Lato-Bold")) {
-                return f.deriveFont(Font.BOLD, 8);
+            if (Objects.equals(f.getFontName(), "Verdana")) {
+
+                Map<TextAttribute, Object> attributes = new HashMap<>();
+
+                attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_ULTRABOLD);
+                attributes.put(TextAttribute.SIZE, 8);
+
+                return f.deriveFont( attributes );
+
             }
         }
         return JBUI.Fonts.label(11);
@@ -135,10 +147,15 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
             final FontMetrics fontMetrics = g.getFontMetrics();
 
             g2.setRenderingHints(HINTS);
-            UISettings.setupAntialiasing(g2);
 
             final int nameWidth = fontMetrics.charsWidth(myProjectName.toCharArray(), 0, myProjectName.length());
             final int nameHeight = fontMetrics.getAscent();
+
+            final AttributedString as = new AttributedString(myProjectName);
+
+            as.addAttribute(TextAttribute.FAMILY, getFont().getFamily());
+            as.addAttribute(TextAttribute.WEIGHT, TextAttribute.WEIGHT_ULTRABOLD);
+            as.addAttribute(TextAttribute.SIZE, 8);
 
             // background
             g2.setColor(myBackgroundColor);
@@ -147,7 +164,7 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
             // label
             g2.setColor(new JBColor(Gray._255, Gray._255));
             g2.setFont(getFont());
-            g2.drawString(myProjectName, (size.width - nameWidth) / 2, nameHeight + (size.height - nameHeight) / 2 - JBUI.scale(1));
+            g2.drawString(as.getIterator(), (size.width - nameWidth) / 2, nameHeight + (size.height - nameHeight) / 2 - JBUI.scale(1));
             g2.dispose();
 
         }

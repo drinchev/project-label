@@ -40,6 +40,10 @@ public class ProjectLabelProjectComponent implements ProjectComponent {
 
     @Override
     public void projectClosed() {
+        StatusBar statusBar = WindowManager.getInstance().getStatusBar(myProject);
+        if ( statusBar != null ) {
+            statusBar.removeWidget("NameLabelWidget" + myProject.getName().toUpperCase());
+        }
     }
 
 }
