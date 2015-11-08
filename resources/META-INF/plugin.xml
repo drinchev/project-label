@@ -1,0 +1,32 @@
+<idea-plugin version="2">
+
+  <id>com.drinchev.projectlabel</id>
+  <name>Project Label</name>
+  <version>0.9</version>
+  <vendor email="drinchev@gmail.com" url="https://github.com/drinchev/project-label">Ivan Drinchev</vendor>
+
+  <description><![CDATA[
+      Project label creates a small label on the bottom right project window with the name and a changeable color.<br />
+      <br />
+      <strong>Note :</strong> For best results install Lato font from Google Fonts
+    ]]></description>
+
+  <idea-version since-build="141.0"/>
+
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <projectService serviceImplementation="com.drinchev.projectlabel.ProjectLabelSettings"/>
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+  <project-components>
+    <component>
+      <implementation-class>com.drinchev.projectlabel.ProjectLabelProjectComponent</implementation-class>
+    </component>
+  </project-components>
+</idea-plugin>
