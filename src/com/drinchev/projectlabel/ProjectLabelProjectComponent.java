@@ -4,45 +4,41 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
-import org.jetbrains.annotations.NotNull;
 
 public class ProjectLabelProjectComponent implements ProjectComponent {
 
-    private Project myProject;
-    private ProjectLabelSettings mySettings = null;
+    private Project project;
+    private ProjectLabelSettings settings;
+    private StatusBar statusBar;
 
     public ProjectLabelProjectComponent(Project project) {
-        myProject = project;
-        mySettings = ProjectLabelSettings.getInstance(project);
+        this.project = project;
+        settings = ProjectLabelSettings.getInstance(project);
     }
 
-    @Override
-    public void initComponent() {
-    }
+    void onSettingsChanged() {
+        StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+        ProjectLabelWidget labelWidget = (ProjectLabelWidget)statusBar.getWidget(ProjectLabelWidget.WIDGET_ID);
 
-    @Override
-    public void disposeComponent() {
-    }
-
-    @Override
-    @NotNull
-    public String getComponentName() {
-        return "ProjectLabelProjectComponent";
+        if (labelWidget != null) {
+            labelWidget.rebuildWidget();
+            labelWidget.updateUI();
+        }
     }
 
     @Override
     public void projectOpened() {
-        StatusBar statusBar = WindowManager.getInstance().getStatusBar(myProject);
+        statusBar = WindowManager.getInstance().getStatusBar(project);
+
         if (statusBar != null) {
-            statusBar.addWidget(new ProjectLabelWidget(myProject, mySettings));
+            statusBar.addWidget(new ProjectLabelWidget(project, settings));
         }
     }
 
     @Override
     public void projectClosed() {
-        StatusBar statusBar = WindowManager.getInstance().getStatusBar(myProject);
-        if ( statusBar != null ) {
-            statusBar.removeWidget("NameLabelWidget" + myProject.getName().toUpperCase());
+        if (statusBar != null ) {
+            statusBar.removeWidget(ProjectLabelWidget.WIDGET_ID);
         }
     }
 

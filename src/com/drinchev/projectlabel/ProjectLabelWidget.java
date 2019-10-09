@@ -4,8 +4,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
-import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
@@ -14,25 +14,31 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
-import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget {
 
-    /**
-     * Configuration
-     */
+    @NonNls
+    static final String WIDGET_ID = "ProjectLabelWidget";
+    private static final String FONTNAME = "Dialog.bold";
+
     private static final int PADDING = 18;
     private static final int HEIGHT = 12;
+    private Font font;
+    private Dimension textDimension;
+    private String projectName;
+    private String label;
+    private Image bufferedImage;
+    private Color backgroundColor;
+    private Color foregroundColor;
+    private ProjectLabelSettings settings;
 
-    @NonNls
-    public static final String WIDGET_ID = "NameLabelWidget";
-
-    static RenderingHints HINTS;
+    private static RenderingHints HINTS;
 
     static {
         HINTS = new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
@@ -52,35 +58,45 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     private Color myBackgroundColor;
     private ProjectLabelSettings mySettings = null;
 
-    public ProjectLabelWidget(final Project project, final ProjectLabelSettings settings) {
+    ProjectLabelWidget(final Project project, final ProjectLabelSettings settings) {
+        addActionListener(event -> {
+            ProjectLabelSettingsDialogWrapper wrapper = new ProjectLabelSettingsDialogWrapper(project);
+            if(wrapper.showAndGet()){
+                setStateFromSettings();
+            }
+        });
 
-        addActionListener(e -> setBackgroundColor());
+        projectName = project.getName().toUpperCase();
+        this.settings = settings;
 
-        myProjectName = project.getName().toUpperCase();
-        mySettings = settings;
-        myBackgroundColor = new JBColor(
-                Color.decode(mySettings.backgroundColor),
-                Color.decode(mySettings.backgroundColor)
-        );
+        setStateFromSettings();
 
         setOpaque(false);
         setFocusable(false);
         setBorder(StatusBarWidget.WidgetBorder.INSTANCE);
         repaint();
         updateUI();
-
     }
 
-    private void setBackgroundColor() {
-        int r = myBackgroundColor.getRed();
-        int g = myBackgroundColor.getGreen();
-        int b = myBackgroundColor.getBlue();
-        String colorStr = JOptionPane.showInputDialog(null, "Set project color", String.format("#%02x%02x%02x",r, g, b));
+    private void setStateFromSettings() {
+        backgroundColor = new JBColor(
+                Color.decode(settings.backgroundColor),
+                Color.decode(settings.backgroundColor)
+        );
+        foregroundColor = new JBColor(
+                Color.decode(settings.foregroundColor),
+                Color.decode(settings.foregroundColor)
+        );
+
+        label = settings.label.isEmpty() ? projectName : settings.label;
+    }
+
+    void rebuildWidget() {
         try {
-            myBackgroundColor = new JBColor(Color.decode(colorStr), Color.decode(colorStr));
-            myBufferedImage = null;
+            setStateFromSettings();
+            bufferedImage = null;
+            textDimension = null;
             repaint();
-            mySettings.backgroundColor = colorStr;
         } catch (Throwable e) {
             // Do nothing
         }
@@ -90,8 +106,7 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     public void dispose() {}
 
     @Override
-    public void install(@NotNull StatusBar statusBar) {
-    }
+    public void install(@NotNull StatusBar statusBar) { }
 
     @Override
     @Nullable
@@ -102,32 +117,48 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     @Override
     @NotNull
     public String ID() {
-        return WIDGET_ID + myProjectName;
+        return WIDGET_ID;
     }
 
     @Override
     public void updateUI() {
         super.updateUI();
-        myBufferedImage = null;
+        bufferedImage = null;
         setFont(getWidgetFont());
     }
 
-    private static Font getWidgetFont() {
-        GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        Font[] fonts = e.getAllFonts();
-        for (Font f : fonts) {
-            if (Objects.equals(f.getFontName(), "Verdana")) {
+    private Font getWidgetFont() {
+        if(font == null) {
+            Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+            for (Font f : fonts) {
+                if (Objects.equals(f.getFontName(), FONTNAME)) {
 
-                Map<TextAttribute, Object> attributes = new HashMap<>();
+                    Map<TextAttribute, Object> attributes = new HashMap<>();
 
-                attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_ULTRABOLD);
-                attributes.put(TextAttribute.SIZE, 8);
+                    attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_ULTRABOLD);
+                    attributes.put(TextAttribute.SIZE, JBUIScale.scale(8));
 
-                return f.deriveFont( attributes );
-
+                    font = f.deriveFont( attributes );
+                    return font;
+                }
             }
+            font = JBUI.Fonts.label(JBUIScale.scale(8));
         }
-        return JBUI.Fonts.label(11);
+
+        return font;
+    }
+
+    private Dimension getTextDimensions() {
+        if(textDimension == null) {
+            FontRenderContext renderContext = new FontRenderContext(font.getTransform(),true,true);
+
+            textDimension = new Dimension(
+                    (int)(font.getStringBounds(label, renderContext).getWidth()),
+                    (int)(font.getStringBounds(label, renderContext).getHeight()) - 2
+            );
+        }
+
+        return textDimension;
     }
 
     @Override
@@ -136,57 +167,45 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     }
 
     @Override
-    public void paintComponent(final Graphics g) {
+    public void paintComponent(final Graphics graphics) {
 
-        if (myBufferedImage == null) {
-            final Dimension size = getSize();
+        if (bufferedImage == null) {
+            int labelWidth = getTextDimensions().width;
+            int labelHeight = getTextDimensions().height;
+
+            Dimension size = getSize();
             final Dimension arcs = new Dimension(8, 8);
 
-            myBufferedImage = UIUtil.createImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
-            final Graphics2D g2 = (Graphics2D) myBufferedImage.getGraphics().create();
-            final FontMetrics fontMetrics = g.getFontMetrics();
+            // image
+            bufferedImage = UIUtil.createImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics().create();
 
-            g2.setRenderingHints(HINTS);
-
-            final int nameWidth = fontMetrics.charsWidth(myProjectName.toCharArray(), 0, myProjectName.length());
-            final int nameHeight = fontMetrics.getAscent();
-
-            final AttributedString as = new AttributedString(myProjectName);
-
-            as.addAttribute(TextAttribute.FAMILY, getFont().getFamily());
-            as.addAttribute(TextAttribute.WEIGHT, TextAttribute.WEIGHT_ULTRABOLD);
-            as.addAttribute(TextAttribute.SIZE, 8);
+            graphics2D.setRenderingHints(HINTS);
 
             // background
-            g2.setColor(myBackgroundColor);
-            g2.fillRoundRect(0, 0, size.width, HEIGHT, arcs.width, arcs.height);
+            graphics2D.setColor(backgroundColor);
+            graphics2D.fillRoundRect(0, 0, size.width, size.height, arcs.width, arcs.height);
 
             // label
-            g2.setColor(new JBColor(Gray._255, Gray._255));
-            g2.setFont(getFont());
-            g2.drawString(as.getIterator(), (size.width - nameWidth) / 2, nameHeight + (size.height - nameHeight) / 2 - JBUI.scale(1));
-            g2.dispose();
+            graphics2D.setColor(foregroundColor);
+            graphics2D.setFont(font);
 
+            graphics2D.drawString(
+                label,
+                (size.width - labelWidth) / 2,
+                ((size.height - labelHeight) / 2) + labelHeight
+            );
+            graphics2D.dispose();
         }
 
-        UIUtil.drawImage(g, myBufferedImage, 0, 0, null);
-
-        if (UIUtil.isRetina() && !UIUtil.isUnderDarcula()) {
-            Graphics2D g2 = (Graphics2D) g.create(0, 0, getWidth(), getHeight());
-            g2.scale(0.5, 0.5);
-            g2.setColor(Gray.x91);
-            g2.drawLine(0, 0, 2 * getWidth(), 0);
-            g2.scale(1, 1);
-            g2.dispose();
-        }
-
+        UIUtil.drawImage(graphics, bufferedImage, 0, 0, null);
     }
 
     @Override
     public Dimension getPreferredSize() {
-        int width = getFontMetrics(getWidgetFont()).charsWidth(myProjectName.toCharArray(), 0, myProjectName.length()) + PADDING + PADDING;
-        int height = HEIGHT;
-        return new Dimension(width, height);
+        int width = getTextDimensions().width + PADDING + PADDING;
+
+        return new Dimension(JBUIScale.scale(width), JBUIScale.scale(HEIGHT));
     }
 
     @Override

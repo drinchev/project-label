@@ -3,25 +3,23 @@ package com.drinchev.projectlabel;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @State(
         name = "ProjectLabel",
         storages = {
-                @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
-                @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/ProjectLabelPlugin.xml", scheme = StorageScheme.DIRECTORY_BASED)
+                @Storage("project-label.xml"),
         }
 )
 public class ProjectLabelSettings implements PersistentStateComponent<ProjectLabelSettings> {
 
-    public String backgroundColor = "#b12f2f";
-
-    protected Project project;
+    public String label = "";
+    public String backgroundColor = "#B12F2F";
+    public String foregroundColor = "#FFFFFF";
 
     public static ProjectLabelSettings getInstance(Project project) {
-        ProjectLabelSettings settings = ServiceManager.getService(project, ProjectLabelSettings.class);
-        settings.project = project;
-        return settings;
+        return ServiceManager.getService(project, ProjectLabelSettings.class);
     }
 
     @Nullable
@@ -31,7 +29,7 @@ public class ProjectLabelSettings implements PersistentStateComponent<ProjectLab
     }
 
     @Override
-    public void loadState(ProjectLabelSettings state) {
+    public void loadState(@NotNull ProjectLabelSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 
