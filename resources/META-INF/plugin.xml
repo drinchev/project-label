@@ -1,4 +1,4 @@
-<idea-plugin version="2">
+<idea-plugin>
 
   <id>com.drinchev.projectlabel</id>
   <name>Project Label</name>
@@ -6,10 +6,16 @@
   <vendor email="drinchev@gmail.com" url="https://github.com/drinchev/project-label">Ivan Drinchev</vendor>
 
   <description><![CDATA[
-      Project label creates a small label on the bottom right project window with the name and a changeable color.<br />
-      <br />
-      <strong>Note :</strong> For best results install Lato font from Google Fonts
+      Project label creates a small label on the bottom right project window with the name and a changeable color.
     ]]></description>
+
+  <change-notes><![CDATA[
+    <ul>
+      <li>Added option to customize font color</li>
+      <li>Added option change the label text (if left empty, will default to project name)</li>
+    </ul>
+    ]]>
+  </change-notes>
 
   <idea-version since-build="141.0"/>
 
