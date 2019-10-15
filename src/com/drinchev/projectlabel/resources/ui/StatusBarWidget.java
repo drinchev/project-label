@@ -1,12 +1,14 @@
-package com.drinchev.projectlabel;
+package com.drinchev.projectlabel.resources.ui;
 
+import com.drinchev.projectlabel.ProjectLabelPreferences;
+import com.drinchev.projectlabel.utils.UtilsFont;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
-import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -17,26 +19,28 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
-public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget {
+public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
+
+    private final static Logger LOG = Logger.getInstance(StatusBarWidget.class);
 
     @NonNls
-    static final String WIDGET_ID = "ProjectLabelWidget";
-    private static final String FONTNAME = "Dialog.bold";
+    public static final String WIDGET_ID = "ProjectLabelWidget";
 
     private static final int PADDING = 18;
     private static final int HEIGHT = 12;
-    private Font font;
+
+    private Project project;
+
     private Dimension textDimension;
-    private String projectName;
-    private String label;
     private Image bufferedImage;
+
+    private ProjectLabelPreferences preferences;
+
+    private String label;
     private Color backgroundColor;
-    private Color foregroundColor;
-    private ProjectLabelSettings settings;
+    private Color textColor;
+    private Font font;
 
     private static RenderingHints HINTS;
 
@@ -53,21 +57,13 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
-    private String myProjectName;
-    private Image myBufferedImage;
-    private Color myBackgroundColor;
-    private ProjectLabelSettings mySettings = null;
-
-    ProjectLabelWidget(final Project project, final ProjectLabelSettings settings) {
+    public StatusBarWidget(final Project project, ProjectLabelPreferences preferences) {
         addActionListener(event -> {
-            ProjectLabelSettingsDialogWrapper wrapper = new ProjectLabelSettingsDialogWrapper(project);
-            if(wrapper.showAndGet()){
-                setStateFromSettings();
-            }
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, "Project Label");
         });
 
-        projectName = project.getName().toUpperCase();
-        this.settings = settings;
+        this.project = project;
+        this.preferences = preferences;
 
         setStateFromSettings();
 
@@ -79,34 +75,51 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     }
 
     private void setStateFromSettings() {
-        backgroundColor = new JBColor(
-                Color.decode(settings.backgroundColor),
-                Color.decode(settings.backgroundColor)
-        );
-        foregroundColor = new JBColor(
-                Color.decode(settings.foregroundColor),
-                Color.decode(settings.foregroundColor)
-        );
-
-        label = settings.label.isEmpty() ? projectName : settings.label;
+        backgroundColor = new JBColor(preferences.getBackgroundColor(), preferences.getBackgroundColor());
+        textColor = new JBColor(preferences.getTextColor(), preferences.getTextColor());
+        label = preferences.getLabel().isEmpty() ? this.project.getName().toUpperCase() : preferences.getLabel();
+        float fontSize = JBUIScale.scaleFontSize(preferences.getFontSize());
+        font = preferences.getFont();
+        if (font == null) {
+            font = UtilsFont.getFontByName("Serif");
+        }
+        if (fontSize == 0) {
+            fontSize = 8;
+        }
+        font = UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, fontSize);
     }
 
-    void rebuildWidget() {
+    public void rebuildWidget() {
         try {
             setStateFromSettings();
             bufferedImage = null;
             textDimension = null;
             repaint();
         } catch (Throwable e) {
-            // Do nothing
+            LOG.error(e);
         }
     }
 
-    @Override
-    public void dispose() {}
+    private Dimension getTextDimensions() {
+        if (textDimension == null) {
+            FontRenderContext renderContext = new FontRenderContext(font.getTransform(), true, true);
+
+            textDimension = new Dimension(
+                    (int) (font.getStringBounds(label, renderContext).getWidth()),
+                    (int) (font.getStringBounds(label, renderContext).getHeight()) - 2
+            );
+        }
+
+        return textDimension;
+    }
 
     @Override
-    public void install(@NotNull StatusBar statusBar) { }
+    public void dispose() {
+    }
+
+    @Override
+    public void install(@NotNull StatusBar statusBar) {
+    }
 
     @Override
     @Nullable
@@ -124,41 +137,6 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     public void updateUI() {
         super.updateUI();
         bufferedImage = null;
-        setFont(getWidgetFont());
-    }
-
-    private Font getWidgetFont() {
-        if(font == null) {
-            Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-            for (Font f : fonts) {
-                if (Objects.equals(f.getFontName(), FONTNAME)) {
-
-                    Map<TextAttribute, Object> attributes = new HashMap<>();
-
-                    attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_ULTRABOLD);
-                    attributes.put(TextAttribute.SIZE, JBUIScale.scale(8));
-
-                    font = f.deriveFont( attributes );
-                    return font;
-                }
-            }
-            font = JBUI.Fonts.label(JBUIScale.scale(8));
-        }
-
-        return font;
-    }
-
-    private Dimension getTextDimensions() {
-        if(textDimension == null) {
-            FontRenderContext renderContext = new FontRenderContext(font.getTransform(),true,true);
-
-            textDimension = new Dimension(
-                    (int)(font.getStringBounds(label, renderContext).getWidth()),
-                    (int)(font.getStringBounds(label, renderContext).getHeight()) - 2
-            );
-        }
-
-        return textDimension;
     }
 
     @Override
@@ -187,13 +165,13 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
             graphics2D.fillRoundRect(0, 0, size.width, size.height, arcs.width, arcs.height);
 
             // label
-            graphics2D.setColor(foregroundColor);
+            graphics2D.setColor(textColor);
             graphics2D.setFont(font);
 
             graphics2D.drawString(
-                label,
-                (size.width - labelWidth) / 2,
-                ((size.height - labelHeight) / 2) + labelHeight
+                    label,
+                    (size.width - labelWidth) / 2,
+                    ((size.height - labelHeight) / 2) + labelHeight
             );
             graphics2D.dispose();
         }
@@ -217,5 +195,6 @@ public class ProjectLabelWidget extends JButton implements CustomStatusBarWidget
     public Dimension getMaximumSize() {
         return getPreferredSize();
     }
+
 
 }

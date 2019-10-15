@@ -1,5 +1,7 @@
 package com.drinchev.projectlabel;
 
+import com.drinchev.projectlabel.resources.ui.StatusBarWidget;
+
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
@@ -8,21 +10,20 @@ import com.intellij.openapi.wm.WindowManager;
 public class ProjectLabelProjectComponent implements ProjectComponent {
 
     private Project project;
-    private ProjectLabelSettings settings;
+    private ProjectLabelPreferences preferences;
     private StatusBar statusBar;
 
     public ProjectLabelProjectComponent(Project project) {
         this.project = project;
-        settings = ProjectLabelSettings.getInstance(project);
+        preferences = ProjectLabelPreferences.getInstance(project);
     }
 
     void onSettingsChanged() {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-        ProjectLabelWidget labelWidget = (ProjectLabelWidget)statusBar.getWidget(ProjectLabelWidget.WIDGET_ID);
-
-        if (labelWidget != null) {
-            labelWidget.rebuildWidget();
-            labelWidget.updateUI();
+        StatusBarWidget statusBarWidget = (StatusBarWidget) statusBar.getWidget(StatusBarWidget.WIDGET_ID);
+        if (statusBarWidget != null) {
+            statusBarWidget.rebuildWidget();
+            statusBarWidget.updateUI();
         }
     }
 
@@ -31,14 +32,14 @@ public class ProjectLabelProjectComponent implements ProjectComponent {
         statusBar = WindowManager.getInstance().getStatusBar(project);
 
         if (statusBar != null) {
-            statusBar.addWidget(new ProjectLabelWidget(project, settings));
+            statusBar.addWidget(new StatusBarWidget(project, preferences));
         }
     }
 
     @Override
     public void projectClosed() {
-        if (statusBar != null ) {
-            statusBar.removeWidget(ProjectLabelWidget.WIDGET_ID);
+        if (statusBar != null) {
+            statusBar.removeWidget(StatusBarWidget.WIDGET_ID);
         }
     }
 
