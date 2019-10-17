@@ -27,7 +27,8 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
     @NonNls
     public static final String WIDGET_ID = "ProjectLabelWidget";
 
-    private static final int PADDING = 18;
+    private static final int HORIZONTAL_PADDING = 18;
+    private static final int VERTICAL_PADDING = 2;
     private static final int HEIGHT = 12;
 
     private Project project;
@@ -106,7 +107,7 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
 
             textDimension = new Dimension(
                     (int) (font.getStringBounds(label, renderContext).getWidth()),
-                    (int) (font.getStringBounds(label, renderContext).getHeight()) - 2
+                    (int) (font.getStringBounds(label, renderContext).getHeight())
             );
         }
 
@@ -149,7 +150,6 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
 
         if (bufferedImage == null) {
             int labelWidth = getTextDimensions().width;
-            int labelHeight = getTextDimensions().height;
 
             Dimension size = getSize();
             final Dimension arcs = new Dimension(8, 8);
@@ -168,10 +168,12 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
             graphics2D.setColor(textColor);
             graphics2D.setFont(font);
 
+            FontMetrics metrics = graphics.getFontMetrics(font);
+
             graphics2D.drawString(
                     label,
                     (size.width - labelWidth) / 2,
-                    ((size.height - labelHeight) / 2) + labelHeight
+                    (size.height - metrics.getHeight()) / 2 + metrics.getAscent()
             );
             graphics2D.dispose();
         }
@@ -181,9 +183,10 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
 
     @Override
     public Dimension getPreferredSize() {
-        int width = getTextDimensions().width + PADDING + PADDING;
-
-        return new Dimension(JBUIScale.scale(width), JBUIScale.scale(HEIGHT));
+        int width = getTextDimensions().width + (HORIZONTAL_PADDING * 2);
+        int textHeight = getTextDimensions().height;
+        int height = textHeight > HEIGHT ? textHeight + (VERTICAL_PADDING * 2) : HEIGHT;
+        return new Dimension(JBUIScale.scale(width), JBUIScale.scale(height));
     }
 
     @Override
