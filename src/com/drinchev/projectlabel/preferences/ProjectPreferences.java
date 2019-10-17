@@ -1,4 +1,4 @@
-package com.drinchev.projectlabel;
+package com.drinchev.projectlabel.preferences;
 
 import com.drinchev.projectlabel.utils.UtilsColor;
 import com.drinchev.projectlabel.utils.UtilsFont;
@@ -21,7 +21,7 @@ import java.awt.*;
                 @Storage("project-label.xml"),
         }
 )
-public class ProjectLabelPreferences implements PersistentStateComponent<ProjectLabelPreferences> {
+public class ProjectPreferences implements PersistentStateComponent<ProjectPreferences> {
 
     @OptionTag
     private String label = "";
@@ -33,27 +33,27 @@ public class ProjectLabelPreferences implements PersistentStateComponent<Project
     private String textColor = "#FFFFFF";
 
     @OptionTag
-    private String fontSize = "8";
+    private String fontSize = null;
 
     @OptionTag
-    private String fontName = "Verdana";
+    private String fontName = null;
 
-    static ProjectLabelPreferences getInstance(Project project) {
-        return ServiceManager.getService(project, ProjectLabelPreferences.class);
+    public static ProjectPreferences getInstance(Project project) {
+        return ServiceManager.getService(project, ProjectPreferences.class);
     }
 
     @Nullable
     @Override
-    public ProjectLabelPreferences getState() {
+    public ProjectPreferences getState() {
         return this;
     }
 
     @Override
-    public void loadState(@NotNull ProjectLabelPreferences state) {
+    public void loadState(@NotNull ProjectPreferences state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 
-    void setBackgroundColor(Color color) {
+    public void setBackgroundColor(Color color) {
         this.backgroundColor = UtilsColor.toHex(color);
     }
 
@@ -61,7 +61,7 @@ public class ProjectLabelPreferences implements PersistentStateComponent<Project
         return Color.decode(this.backgroundColor);
     }
 
-    void setTextColor(Color color) {
+    public void setTextColor(Color color) {
         this.textColor = UtilsColor.toHex(color);
     }
 
@@ -73,28 +73,28 @@ public class ProjectLabelPreferences implements PersistentStateComponent<Project
         return this.label;
     }
 
-    void setLabel(String label) {
+    public void setLabel(String label) {
         this.label = label;
     }
 
     public int getFontSize() {
-        return Integer.parseInt(this.fontSize);
+        return this.fontSize == null ? -1 : Integer.parseInt(this.fontSize);
     }
 
-    void setFontSize(int fontSize) {
-        this.fontSize = Integer.toString(fontSize);
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize == -1 ? null : Integer.toString(fontSize);
     }
 
     public String getFontName() {
-        return fontName;
+        return fontName == null ? "" : fontName;
     }
 
     public Font getFont() {
         return UtilsFont.getFontByName(fontName);
     }
 
-    void setFontName(String font) {
-        this.fontName = font;
+    public void setFontName(String font) {
+        this.fontName = font.isEmpty() ? null : font;
     }
 
 

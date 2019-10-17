@@ -1,5 +1,7 @@
 package com.drinchev.projectlabel;
 
+import com.drinchev.projectlabel.preferences.ApplicationPreferences;
+import com.drinchev.projectlabel.preferences.ProjectPreferences;
 import com.drinchev.projectlabel.resources.ui.StatusBarWidget;
 
 import com.intellij.openapi.components.ProjectComponent;
@@ -10,12 +12,14 @@ import com.intellij.openapi.wm.WindowManager;
 public class ProjectLabelProjectComponent implements ProjectComponent {
 
     private Project project;
-    private ProjectLabelPreferences preferences;
+    private ProjectPreferences projectPreferences;
+    private ApplicationPreferences applicationPreferences;
     private StatusBar statusBar;
 
     public ProjectLabelProjectComponent(Project project) {
         this.project = project;
-        preferences = ProjectLabelPreferences.getInstance(project);
+        projectPreferences = ProjectPreferences.getInstance(project);
+        applicationPreferences = ApplicationPreferences.getInstance();
     }
 
     void onSettingsChanged() {
@@ -32,7 +36,7 @@ public class ProjectLabelProjectComponent implements ProjectComponent {
         statusBar = WindowManager.getInstance().getStatusBar(project);
 
         if (statusBar != null) {
-            statusBar.addWidget(new StatusBarWidget(project, preferences));
+            statusBar.addWidget(new StatusBarWidget(project, projectPreferences, applicationPreferences));
         }
     }
 

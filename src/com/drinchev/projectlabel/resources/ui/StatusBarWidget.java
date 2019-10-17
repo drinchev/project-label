@@ -1,6 +1,7 @@
 package com.drinchev.projectlabel.resources.ui;
 
-import com.drinchev.projectlabel.ProjectLabelPreferences;
+import com.drinchev.projectlabel.preferences.ApplicationPreferences;
+import com.drinchev.projectlabel.preferences.ProjectPreferences;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
@@ -36,7 +37,8 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
     private Dimension textDimension;
     private Image bufferedImage;
 
-    private ProjectLabelPreferences preferences;
+    private ProjectPreferences projectPreferences;
+    private ApplicationPreferences applicationPreferences;
 
     private String label;
     private Color backgroundColor;
@@ -58,13 +60,14 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
-    public StatusBarWidget(final Project project, ProjectLabelPreferences preferences) {
+    public StatusBarWidget(final Project project, ProjectPreferences projectPreferences, ApplicationPreferences applicationPreferences) {
         addActionListener(event -> {
             ShowSettingsUtil.getInstance().showSettingsDialog(project, "Project Label");
         });
 
         this.project = project;
-        this.preferences = preferences;
+        this.projectPreferences = projectPreferences;
+        this.applicationPreferences = applicationPreferences;
 
         setStateFromSettings();
 
@@ -76,16 +79,21 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
     }
 
     private void setStateFromSettings() {
-        backgroundColor = new JBColor(preferences.getBackgroundColor(), preferences.getBackgroundColor());
-        textColor = new JBColor(preferences.getTextColor(), preferences.getTextColor());
-        label = preferences.getLabel().isEmpty() ? this.project.getName().toUpperCase() : preferences.getLabel();
-        float fontSize = JBUIScale.scaleFontSize(preferences.getFontSize());
-        font = preferences.getFont();
-        if (font == null) {
-            font = UtilsFont.getFontByName("Serif");
-        }
+        backgroundColor = new JBColor(projectPreferences.getBackgroundColor(), projectPreferences.getBackgroundColor());
+        textColor = new JBColor(projectPreferences.getTextColor(), projectPreferences.getTextColor());
+        label = projectPreferences.getLabel().isEmpty() ? this.project.getName().toUpperCase() : projectPreferences.getLabel();
+
+
+        float projectPreferencesFontSize = projectPreferences.getFontSize();
+        float applicationPreferencesFontSize = applicationPreferences.getFontSize();
+        float fontSize = JBUIScale.scaleFontSize(projectPreferencesFontSize == -1 ? applicationPreferencesFontSize : projectPreferencesFontSize);
         if (fontSize == 0) {
             fontSize = 8;
+        }
+
+        font = projectPreferences.getFontName().isEmpty() ? applicationPreferences.getFont() : projectPreferences.getFont();
+        if (font == null) {
+            font = UtilsFont.getFontByName("Serif");
         }
         font = UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, fontSize);
     }

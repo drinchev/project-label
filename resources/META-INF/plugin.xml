@@ -22,7 +22,8 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="com.drinchev.projectlabel.ProjectLabelPreferences"/>
+        <applicationService serviceImplementation="com.drinchev.projectlabel.preferences.ApplicationPreferences"/>
+        <projectService serviceImplementation="com.drinchev.projectlabel.preferences.ProjectPreferences"/>
         <projectConfigurable id="ProjectLabel" displayName="Project Label"
                              instance="com.drinchev.projectlabel.ProjectLabelConfigurable"/>
     </extensions>
