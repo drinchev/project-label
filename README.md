@@ -2,12 +2,18 @@
 
 Project label creates a small label on the bottom right project window with the name and a changeable color.
 
-*Note :* For best results install Lato font from Google Fonts
+## Changelog
 
-## How does it work ?
+### 1.0
 
-It will take the name of the project and render a label on the bottom right. You can click on the label to change the
-color and change the project name if you want to change the label text.
+- Added preferences per project and per application
+- Added option to change font size and font family
+- Added option to change text color 
+- Added option to modify the label's text
+
+### 0.9
+
+Initial release
 
 ## How does it look like ?
 
