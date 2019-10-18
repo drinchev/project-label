@@ -11,8 +11,10 @@
 
     <change-notes><![CDATA[
     <ul>
-      <li>Added option to customize font color</li>
-      <li>Added option change the label text (if left empty, will default to project name)</li>
+      <li>Added preferences per project and per application</li>
+      <li>Added option to change font size and font family</li>
+      <li>Added option to change text color </li>
+      <li>Added option to modify the label's text</li>
     </ul>
     ]]>
     </change-notes>
