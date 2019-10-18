@@ -24,7 +24,7 @@ public class ApplicationPreferences implements PersistentStateComponent<Applicat
     private String fontSize = "8";
 
     @OptionTag
-    private String fontName = "Serif";
+    private String fontName = "Dialog";
 
     public static ApplicationPreferences getInstance() {
         return ServiceManager.getService(ApplicationPreferences.class);

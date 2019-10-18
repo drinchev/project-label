@@ -105,7 +105,7 @@ public class PluginConfiguration {
             return "";
         }
         String name = this.fontComboBoxFont.getFontName();
-        return name == null ? "Serif" : name;
+        return name == null ? "Dialog" : name;
     }
 
     public void setFontName(String font) {
@@ -140,7 +140,7 @@ public class PluginConfiguration {
 
     public String getGlobalFontName() {
         String name = this.fontComboBoxGlobalFont.getFontName();
-        return name == null ? "Serif" : name;
+        return name == null ? "Dialog" : name;
     }
 
     /**

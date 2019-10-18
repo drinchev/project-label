@@ -62,6 +62,8 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
 
     public StatusBarWidget(final Project project, ProjectPreferences projectPreferences, ApplicationPreferences applicationPreferences) {
         addActionListener(event -> {
+            rebuildWidget();
+            updateUI();
             ShowSettingsUtil.getInstance().showSettingsDialog(project, "Project Label");
         });
 
@@ -93,7 +95,7 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
 
         font = projectPreferences.getFontName().isEmpty() ? applicationPreferences.getFont() : projectPreferences.getFont();
         if (font == null) {
-            font = UtilsFont.getFontByName("Serif");
+            font = UtilsFont.getFontByName("Dialog");
         }
         font = UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, fontSize);
     }
