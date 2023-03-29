@@ -34,5 +34,8 @@
 
     <project-components>
         <!-- Add your project components here -->
+        <component>
+            <implementation-class>com.drinchev.projectlabel.ProjectLabelProjectComponent</implementation-class>
+        </component>
     </project-components>
 </idea-plugin>
