@@ -25,7 +25,7 @@
         <projectService serviceImplementation="com.drinchev.projectlabel.preferences.ProjectPreferences"/>
         <projectConfigurable id="ProjectLabel" displayName="Project Label"
                              instance="com.drinchev.projectlabel.ProjectLabelConfigurable"/>
-        <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory"/>
+        <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory" order="last"/>
     </extensions>
 
     <actions>
