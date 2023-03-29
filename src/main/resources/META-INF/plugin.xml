@@ -2,7 +2,6 @@
 
     <id>com.drinchev.projectlabel</id>
     <name>Project Label</name>
-    <version>1.0</version>
     <vendor email="drinchev@gmail.com" url="https://github.com/drinchev/project-label">Ivan Drinchev</vendor>
 
     <description><![CDATA[
@@ -19,8 +18,6 @@
     ]]>
     </change-notes>
 
-    <idea-version since-build="141.0"/>
-
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -28,6 +25,7 @@
         <projectService serviceImplementation="com.drinchev.projectlabel.preferences.ProjectPreferences"/>
         <projectConfigurable id="ProjectLabel" displayName="Project Label"
                              instance="com.drinchev.projectlabel.ProjectLabelConfigurable"/>
+        <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory"/>
     </extensions>
 
     <actions>
@@ -35,8 +33,6 @@
     </actions>
 
     <project-components>
-        <component>
-            <implementation-class>com.drinchev.projectlabel.ProjectLabelProjectComponent</implementation-class>
-        </component>
+        <!-- Add your project components here -->
     </project-components>
 </idea-plugin>
