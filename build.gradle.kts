@@ -1,8 +1,6 @@
-import org.jetbrains.intellij.ideBuildNumber
-
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.12.0"
+    id("org.jetbrains.intellij") version "1.13.3"
 }
 
 group = "com.drinchev.projectlabel"
