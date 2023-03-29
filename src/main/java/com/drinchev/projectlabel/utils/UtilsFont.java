@@ -1,6 +1,7 @@
 package com.drinchev.projectlabel.utils;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.ui.JBFont;
 
 import java.awt.*;
 import java.awt.font.TextAttribute;
@@ -40,6 +41,15 @@ public class UtilsFont {
         attributes.put(TextAttribute.WEIGHT, weight);
         attributes.put(TextAttribute.SIZE, size);
         return font.deriveFont(attributes);
+    }
+
+    public static JBFont getStatusBarItemFont() {
+        try {
+            return JBFont.smallOrNewUiMedium();
+        } catch (NoSuchMethodError e) {
+            LOG.warn("JBFont.smallOrNewUiMedium() is not available in this version of IntelliJ", e);
+            return JBFont.medium();
+        }
     }
 
 }

@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.util.ui.JBFont;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
 import org.jetbrains.annotations.NotNull;
@@ -21,10 +22,10 @@ import java.awt.*;
 public class ApplicationPreferences implements PersistentStateComponent<ApplicationPreferences> {
 
     @OptionTag
-    private String fontSize = "8";
+    private String fontSize = String.valueOf(UtilsFont.getStatusBarItemFont().getSize()); // https://jetbrains.design/intellij/principles/typography/#03
 
     @OptionTag
-    private String fontName = "Dialog";
+    private String fontName = UtilsFont.getStatusBarItemFont().getFontName();
 
     public static ApplicationPreferences getInstance() {
         return ServiceManager.getService(ApplicationPreferences.class);
