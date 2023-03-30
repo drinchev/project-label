@@ -27,10 +27,10 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
     private String label = "";
 
     @OptionTag
-    private String backgroundColor = "#B12F2F";
+    private String backgroundColor = "#b12f2f";
 
     @OptionTag
-    private String textColor = "#FFFFFF";
+    private String textColor = "#ffffff";
 
     @OptionTag
     private String fontSize = null;

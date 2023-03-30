@@ -10,10 +10,11 @@ import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
+import com.intellij.util.ui.ImageUtil;
+import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +22,12 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
 
-public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 
-    private final static Logger LOG = Logger.getInstance(StatusBarWidget.class);
+public class ProjectLabelStatusBarWidget extends JButton implements CustomStatusBarWidget {
+
+    private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
     @NonNls
     public static final String WIDGET_ID = "ProjectLabelWidget";
@@ -32,35 +36,30 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
     private static final int VERTICAL_PADDING = 2;
     private static final int HEIGHT = 12;
 
-    private Project project;
+    private final Project project;
 
     private Dimension textDimension;
     private Image bufferedImage;
 
-    private ProjectPreferences projectPreferences;
-    private ApplicationPreferences applicationPreferences;
+    private final ProjectPreferences projectPreferences;
+    private final ApplicationPreferences applicationPreferences;
 
     private String label;
     private Color backgroundColor;
     private Color textColor;
     private Font font;
 
-    private static RenderingHints HINTS;
+    private static final RenderingHints HINTS = new RenderingHints(
+            ofEntries(
+                    entry(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY),
+                    entry(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON),
+                    entry(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY),
+                    entry(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON),
+                    entry(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+            )
+    );
 
-    static {
-        HINTS = new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        HINTS.put(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        HINTS.put(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_QUALITY);
-        HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        HINTS.put(RenderingHints.KEY_FRACTIONALMETRICS,
-                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-    }
-
-    public StatusBarWidget(final Project project, ProjectPreferences projectPreferences, ApplicationPreferences applicationPreferences) {
+    public ProjectLabelStatusBarWidget(final Project project, ProjectPreferences projectPreferences, ApplicationPreferences applicationPreferences) {
         addActionListener(event -> {
             rebuildWidget();
             updateUI();
@@ -75,7 +74,7 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
 
         setOpaque(false);
         setFocusable(false);
-        setBorder(StatusBarWidget.WidgetBorder.INSTANCE);
+        setBorder(JBUI.CurrentTheme.StatusBar.Widget.border());
         repaint();
         updateUI();
     }
@@ -84,20 +83,29 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
         backgroundColor = new JBColor(projectPreferences.getBackgroundColor(), projectPreferences.getBackgroundColor());
         textColor = new JBColor(projectPreferences.getTextColor(), projectPreferences.getTextColor());
         label = projectPreferences.getLabel().isEmpty() ? this.project.getName().toUpperCase() : projectPreferences.getLabel();
+        setToolTipText("Project Label: " + label);
 
+        float fontSize = fontSize();
 
+        this.font = fontOfSize(fontSize);
+    }
+
+    private Font fontOfSize(float fontSize) {
+        Font font = projectPreferences.getFontName().isEmpty() ? applicationPreferences.getFont() : projectPreferences.getFont();
+        if (font == null) {
+            font = UtilsFont.getStatusBarItemFont();
+        }
+        return UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, fontSize);
+    }
+
+    private float fontSize() {
         float projectPreferencesFontSize = projectPreferences.getFontSize();
         float applicationPreferencesFontSize = applicationPreferences.getFontSize();
         float fontSize = JBUIScale.scaleFontSize(projectPreferencesFontSize == -1 ? applicationPreferencesFontSize : projectPreferencesFontSize);
         if (fontSize == 0) {
             fontSize = 8;
         }
-
-        font = projectPreferences.getFontName().isEmpty() ? applicationPreferences.getFont() : projectPreferences.getFont();
-        if (font == null) {
-            font = UtilsFont.getFontByName("Dialog");
-        }
-        font = UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, fontSize);
+        return fontSize;
     }
 
     public void rebuildWidget() {
@@ -133,12 +141,6 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
     }
 
     @Override
-    @Nullable
-    public WidgetPresentation getPresentation(@NotNull PlatformType type) {
-        return null;
-    }
-
-    @Override
     @NotNull
     public String ID() {
         return WIDGET_ID;
@@ -165,7 +167,7 @@ public class StatusBarWidget extends JButton implements CustomStatusBarWidget {
             final Dimension arcs = new Dimension(8, 8);
 
             // image
-            bufferedImage = UIUtil.createImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+            bufferedImage = ImageUtil.createImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics().create();
 
             graphics2D.setRenderingHints(HINTS);
