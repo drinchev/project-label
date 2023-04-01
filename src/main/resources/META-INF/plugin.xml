@@ -11,6 +11,7 @@
         <projectConfigurable id="ProjectLabel" displayName="Project Label"
                              instance="com.drinchev.projectlabel.ProjectLabelConfigurable"/>
         <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory" order="last"/>
+        <postStartupActivity implementation="com.drinchev.projectlabel.ProjectLabelStartupActivity"/>
     </extensions>
 
     <actions>
