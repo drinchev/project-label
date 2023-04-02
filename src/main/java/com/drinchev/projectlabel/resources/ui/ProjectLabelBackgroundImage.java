@@ -30,7 +30,8 @@ public class ProjectLabelBackgroundImage {
 
     private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
-
+    private static final int HORIZONTAL_PADDING = 18;
+    private static final int VERTICAL_PADDING = 2;
     private static final RenderingHints HINTS = new RenderingHints(
             ofEntries(
                     entry(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY),
@@ -55,9 +56,11 @@ public class ProjectLabelBackgroundImage {
 
         PropertiesComponent prop = PropertiesComponent.getInstance();
         String image = createImage(project, projectPreferences, applicationPreferences);
-        String opacity = String.valueOf(10); // config    OpacitySettingState.loadState());
+        String opacity = String.valueOf(15); // config    OpacitySettingState.loadState());
         String imageProp = String.format("%s,%s", image, opacity);
-        prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp);
+        LOG.warn("EDITOR_PROP: " + prop.getValue(IdeBackgroundUtil.EDITOR_PROP));
+        LOG.warn("FRAME_PROP: " + prop.getValue(IdeBackgroundUtil.FRAME_PROP));
+        prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp+",plain,top_right"); // statt plain: tile (wiederholen), scale (zoomen)
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, imageProp);
 
 //        NotificationCenter.notice("Background switched successfully");
@@ -85,19 +88,20 @@ public class ProjectLabelBackgroundImage {
             JButton button = new JButton(label);
             button.setFont(font);
             button.setForeground(textColor);
-            button.setBackground(backgroundColor);
+            button.setBackground(null);
 
             bufferedImage = createImageFromButton(button);
 
-            BufferedImage drawImage = new BufferedImage(1024, 768, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = drawImage.createGraphics();
-            g2.drawImage(bufferedImage, 0, 0, null);//drawImage.getWidth()/2-bufferedImage.getWidth()/2, drawImage.getHeight()- bufferedImage.getHeight()/2, null);
-            g2.dispose();
+//            BufferedImage drawImage = new BufferedImage(1024, 768, BufferedImage.TYPE_INT_ARGB);
+//            Graphics2D g2 = drawImage.createGraphics();
+//            g2.drawImage(bufferedImage, 0, 0, null);//drawImage.getWidth()/2-bufferedImage.getWidth()/2, drawImage.getHeight()- bufferedImage.getHeight()/2, null);
+//            g2.dispose();
             Path filePath = Files.createTempFile("project-label", ".png");
             filePath.toFile().deleteOnExit();
-            ImageIO.write(drawImage, "png", filePath.toFile());
+            ImageIO.write(bufferedImage, "png", filePath.toFile());
             resultingImage = filePath.toFile().getAbsolutePath();
             LOG.warn("resulting image path: " + resultingImage);
+            Runtime.getRuntime().exec(new String[]{"open", resultingImage});
         }
         return resultingImage;
 
@@ -134,9 +138,35 @@ public class ProjectLabelBackgroundImage {
         // Create a BufferedImage and get its Graphics2D object
         BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
+        g2d.setRenderingHints(HINTS);
+
+        // calculate text location and size
+        int labelWidth = getTextDimensions().width;
+        int labelHeight = getTextDimensions().height;
+        FontMetrics metrics = g2d.getFontMetrics(font);
+
+        int textX = (button.getSize().width - labelWidth) / 2;
+        int textY = (button.getSize().height - metrics.getHeight()) / 2 + metrics.getAscent();
+
+        // bg
+        g2d.setColor(backgroundColor);
+        final Dimension arcs = new Dimension(5*8, 5*8);
+
+        g2d.fillRoundRect(textX-(HORIZONTAL_PADDING*5), (textY-metrics.getAscent())-(VERTICAL_PADDING*5), labelWidth+(HORIZONTAL_PADDING*5*2), labelHeight+(VERTICAL_PADDING*5*2), arcs.width, arcs.height);
+
+        // label
+        g2d.setColor(textColor);
+        g2d.setFont(font);
+//
+
+        g2d.drawString(
+                label,
+                textX,
+                textY
+        );
 
         // Paint the panel onto the Graphics2D object
-        panel.print(g2d);
+//        panel.print(g2d);
 
         // Dispose of the Graphics2D object
         g2d.dispose();
@@ -144,4 +174,5 @@ public class ProjectLabelBackgroundImage {
         // Return the resulting image
         return image;
     }
+
 }
