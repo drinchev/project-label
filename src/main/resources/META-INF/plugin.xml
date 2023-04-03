@@ -4,20 +4,6 @@
     <name>Project Label</name>
     <vendor email="drinchev@gmail.com" url="https://github.com/drinchev/project-label">Ivan Drinchev</vendor>
 
-    <description><![CDATA[
-      Project label creates a small label on the bottom right project window with the name and a changeable color.
-    ]]></description>
-
-    <change-notes><![CDATA[
-    <ul>
-      <li>Added preferences per project and per application</li>
-      <li>Added option to change font size and font family</li>
-      <li>Added option to change text color </li>
-      <li>Added option to modify the label's text</li>
-    </ul>
-    ]]>
-    </change-notes>
-
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
