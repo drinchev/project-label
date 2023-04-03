@@ -1,21 +1,33 @@
 package com.drinchev.projectlabel;
 
+
+import com.drinchev.projectlabel.resources.ui.ProjectLabelBackgroundImage;
 import com.drinchev.projectlabel.resources.ui.ProjectLabelStatusBarWidget;
 import com.intellij.openapi.components.Service;
+import com.intellij.openapi.components.Service.Level;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
+import org.jetbrains.annotations.NotNull;
 
-@Service
-public final class ProjectLabelService {
+
+import static java.util.Objects.requireNonNull;
+
+@Service(Level.PROJECT)
+public class ProjectLabel {
 
     private final Project project;
 
-    public ProjectLabelService(Project project) {
-        this.project = project;
+    public ProjectLabel(@NotNull Project project) {
+        this.project = requireNonNull(project);
     }
 
-    void onSettingsChanged() {
+    public void onSettingsChanged() {
+        updateStatusBar();
+        updateBackgroundImage();
+    }
+
+    private void updateStatusBar() {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         ProjectLabelStatusBarWidget statusBarWidget = (ProjectLabelStatusBarWidget) statusBar.getWidget(ProjectLabelStatusBarWidget.WIDGET_ID);
         if (statusBarWidget != null) {
@@ -24,4 +36,7 @@ public final class ProjectLabelService {
         }
     }
 
+    private void updateBackgroundImage() {
+        project.getService(ProjectLabelBackgroundImage.class).updateImage();
+    }
 }

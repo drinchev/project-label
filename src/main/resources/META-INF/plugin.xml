@@ -8,6 +8,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.drinchev.projectlabel.preferences.ApplicationPreferences"/>
         <projectService serviceImplementation="com.drinchev.projectlabel.preferences.ProjectPreferences"/>
+        <projectService serviceImplementation="com.drinchev.projectlabel.ProjectLabel" />
+        <projectService serviceImplementation="com.drinchev.projectlabel.resources.ui.ProjectLabelBackgroundImage" />
         <projectConfigurable id="ProjectLabel" displayName="Project Label"
                              instance="com.drinchev.projectlabel.ProjectLabelConfigurable"/>
         <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory" order="last"/>
@@ -17,4 +19,5 @@
     <actions>
         <!-- Add your actions here -->
     </actions>
+
 </idea-plugin>

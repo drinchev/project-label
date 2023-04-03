@@ -70,11 +70,9 @@ public class ProjectLabelConfigurable implements Configurable {
             projectPreferences.setLabel(preferencesPanel.getLabel());
             applicationPreferences.setFontSize(preferencesPanel.getGlobalFontSize());
             applicationPreferences.setFontName(preferencesPanel.getGlobalFontName());
+
             if (project != null) {
-                ProjectLabelService projectService = project.getService(ProjectLabelService.class);
-                if (projectService != null) {
-                    projectService.onSettingsChanged();
-                }
+                project.getService(ProjectLabel.class).onSettingsChanged();
             }
         }
     }

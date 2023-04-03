@@ -163,33 +163,10 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     public void paintComponent(final Graphics graphics) {
 
         if (bufferedImage == null) {
-            int labelWidth = getTextDimensions().width;
-
             Dimension size = getSize();
-            final Dimension arcs = new Dimension(8, 8);
             int height = size.height - (2 * VERTICAL_MARGIN);
-
-            FontMetrics metrics = graphics.getFontMetrics(font);
-
-            bufferedImage = ImageUtil.createImage(size.width, height, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics().create();
-
-            graphics2D.setRenderingHints(HINTS);
-
-            // background
-            graphics2D.setColor(backgroundColor);
-            graphics2D.fillRoundRect(0, 0, size.width, height, arcs.width, arcs.height);
-
-            // label
-            graphics2D.setColor(textColor);
-            graphics2D.setFont(font);
-
-            graphics2D.drawString(
-                    label,
-                    (size.width - labelWidth) / 2,
-                    (height - metrics.getHeight()) / 2 + metrics.getAscent()
-            );
-            graphics2D.dispose();
+            ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
+            bufferedImage = renderer.renderLabel(new Rectangle(0, 0, size.width, height), 1);
         }
 
         UIUtil.drawImage(graphics, bufferedImage, 0, VERTICAL_MARGIN, null);
