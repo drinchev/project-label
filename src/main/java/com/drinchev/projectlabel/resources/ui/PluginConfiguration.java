@@ -2,11 +2,12 @@ package com.drinchev.projectlabel.resources.ui;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.FontComboBox;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class PluginConfiguration {
 
@@ -24,6 +25,11 @@ public class PluginConfiguration {
     private JCheckBox checkBoxInheritFontSize;
     private JCheckBox checkBoxInheritFont;
     private FontComboBox fontComboBoxGlobalFont;
+    private JRadioButton editorImageHiddenRadioButton;
+    private JRadioButton editorImageTopRightRadioButton;
+    private JRadioButton editorImageBottomRightRadioButton;
+    private JRadioButton editorImageTopLeftRadioButton;
+    private JRadioButton editorImageBottomLeftRadioButton;
 
     private ColorField colorFieldTextColor;
     private ColorField colorFieldBackgroundColor;
@@ -68,6 +74,14 @@ public class PluginConfiguration {
                 spinnerFontSize.setEnabled(true);
             }
         });
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        Stream.of(editorImageHiddenRadioButton,
+                        editorImageTopLeftRadioButton,
+                        editorImageTopRightRadioButton,
+                        editorImageBottomRightRadioButton,
+                        editorImageBottomLeftRadioButton)
+                .forEach(buttonGroup::add);
     }
 
     public void setTextColor(Color color) {
@@ -141,6 +155,42 @@ public class PluginConfiguration {
     public String getGlobalFontName() {
         String name = this.fontComboBoxGlobalFont.getFontName();
         return name == null ? "Dialog" : name;
+    }
+
+    // backgroundImage
+    public BackgroundImagePosition getBackgroundImagePosition() {
+        if (editorImageTopLeftRadioButton.isSelected()) {
+            return BackgroundImagePosition.TOP_LEFT;
+        } else if (editorImageTopRightRadioButton.isSelected()) {
+            return BackgroundImagePosition.TOP_RIGHT;
+        } else if (editorImageBottomRightRadioButton.isSelected()) {
+            return BackgroundImagePosition.BOTTOM_RIGHT;
+        } else if (editorImageBottomLeftRadioButton.isSelected()) {
+            return BackgroundImagePosition.BOTTOM_LEFT;
+        } else {
+            return BackgroundImagePosition.HIDDEN;
+        }
+    }
+
+    public void setBackgroundImagePosition(@NotNull BackgroundImagePosition position) {
+        Objects.requireNonNull(position);
+        switch (position) {
+            case TOP_LEFT:
+                editorImageTopLeftRadioButton.setSelected(true);
+                break;
+            case TOP_RIGHT:
+                editorImageTopRightRadioButton.setSelected(true);
+                break;
+            case BOTTOM_RIGHT:
+                editorImageBottomRightRadioButton.setSelected(true);
+                break;
+            case BOTTOM_LEFT:
+                editorImageBottomLeftRadioButton.setSelected(true);
+                break;
+            case HIDDEN:
+                editorImageHiddenRadioButton.setSelected(true);
+                break;
+        }
     }
 
     /**

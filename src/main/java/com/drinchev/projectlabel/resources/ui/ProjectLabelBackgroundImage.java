@@ -41,17 +41,23 @@ public class ProjectLabelBackgroundImage {
     }
 
     public void showImage() {
+        if (!shouldShowBackgroundImage()) {
+            hideImage();
+            return;
+        }
         createImage();
         setImageToIDE();
+    }
+
+    private boolean shouldShowBackgroundImage() {
+        return projectPreferences.getBackgroundImagePosition() != BackgroundImagePosition.HIDDEN;
     }
 
     private void setImageToIDE() {
         PropertiesComponent prop = projectLevelPropertiesComponent();
         String opacity = String.valueOf(15); // config    OpacitySettingState.loadState());
-        String imageProp = String.format("%s,%s", resultingImage, opacity);
-        LOG.warn("EDITOR_PROP: " + prop.getValue(IdeBackgroundUtil.EDITOR_PROP));
-        LOG.warn("FRAME_PROP: " + prop.getValue(IdeBackgroundUtil.FRAME_PROP));
-        prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp+",plain,top_right"); // statt plain: tile (wiederholen), scale (zoomen)
+        String imageProp = String.format("%s,%s,plain,%s", resultingImage, opacity, projectPreferences.getBackgroundImagePosition().name().toLowerCase());
+        prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp); // statt plain: tile (wiederholen), scale (zoomen)
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, imageProp);
     }
 
@@ -68,8 +74,12 @@ public class ProjectLabelBackgroundImage {
     }
 
     public void hideImage() {
-        LOG.info("Hiding project label background image.");
         PropertiesComponent prop = projectLevelPropertiesComponent();
+        if (!prop.getValue(IdeBackgroundUtil.EDITOR_PROP, "").contains("project-label") && !prop.getValue(IdeBackgroundUtil.FRAME_PROP, "").contains("project-label")) {
+            LOG.info("Not touching background image since not a project label image.");
+            return;
+        }
+        LOG.info("Hiding project label background image.");
         prop.setValue(IdeBackgroundUtil.EDITOR_PROP, null);
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, null);
     }
