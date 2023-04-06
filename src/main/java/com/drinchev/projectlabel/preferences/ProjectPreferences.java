@@ -44,6 +44,9 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
     @OptionTag
     private String backgroundImagePosition = BackgroundImagePosition.HIDDEN.name();
 
+    @OptionTag
+    private int backgroundImageOpacity = 15;
+
     public static ProjectPreferences getInstance(Project project) {
         return project.getService(ProjectPreferences.class);
     }
@@ -111,6 +114,11 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
         return BackgroundImagePosition.valueOf(this.backgroundImagePosition);
     }
 
+    public int getBackgroundImageOpacity() {
+        return backgroundImageOpacity;
+    }
 
-
+    public void setBackgroundImageOpacity(int backgroundImageOpacity) {
+        this.backgroundImageOpacity = backgroundImageOpacity;
+    }
 }

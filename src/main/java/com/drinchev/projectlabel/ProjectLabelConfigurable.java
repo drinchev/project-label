@@ -48,6 +48,7 @@ public class ProjectLabelConfigurable implements Configurable {
             preferencesPanel.setFontName(projectPreferences.getFontName());
             preferencesPanel.setLabel(projectPreferences.getLabel());
             preferencesPanel.setBackgroundImagePosition(projectPreferences.getBackgroundImagePosition());
+            preferencesPanel.setBackgroundImageOpacity(projectPreferences.getBackgroundImageOpacity());
         }
         return preferencesPanel.getRootPanel();
     }
@@ -60,7 +61,8 @@ public class ProjectLabelConfigurable implements Configurable {
                 !projectPreferences.getFontName().equals(preferencesPanel.getFontName()) ||
                 applicationPreferences.getFontSize() != preferencesPanel.getGlobalFontSize() ||
                 !applicationPreferences.getFontName().equals(preferencesPanel.getGlobalFontName()) ||
-		projectPreferences.getBackgroundImagePosition() != preferencesPanel.getBackgroundImagePosition();
+		projectPreferences.getBackgroundImagePosition() != preferencesPanel.getBackgroundImagePosition() ||
+		projectPreferences.getBackgroundImageOpacity() != preferencesPanel.getBackgroundImageOpacity();
     }
 
     public void apply() {
@@ -71,6 +73,7 @@ public class ProjectLabelConfigurable implements Configurable {
             projectPreferences.setFontName(preferencesPanel.getFontName());
             projectPreferences.setLabel(preferencesPanel.getLabel());
             projectPreferences.setBackgroundImagePosition(preferencesPanel.getBackgroundImagePosition());
+            projectPreferences.setBackgroundImageOpacity(preferencesPanel.getBackgroundImageOpacity());
             applicationPreferences.setFontSize(preferencesPanel.getGlobalFontSize());
             applicationPreferences.setFontName(preferencesPanel.getGlobalFontName());
 

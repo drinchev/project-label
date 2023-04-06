@@ -56,10 +56,14 @@ public class ProjectLabelBackgroundImage {
 
     private void setImageToIDE() {
         PropertiesComponent prop = projectLevelPropertiesComponent();
-        String opacity = String.valueOf(15); // config    OpacitySettingState.loadState());
+        String opacity = String.valueOf(projectPreferences.getBackgroundImageOpacity());
         String imageProp = String.format("%s,%s,plain,%s", resultingImage, opacity, projectPreferences.getBackgroundImagePosition().name().toLowerCase());
+        String prev_editor = prop.getValue(IdeBackgroundUtil.EDITOR_PROP);
         prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp); // statt plain: tile (wiederholen), scale (zoomen)
+        String prev_frame = prop.getValue(IdeBackgroundUtil.FRAME_PROP);
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, imageProp);
+        LOG.warn("Previous editor image: " + prev_editor);
+        LOG.warn("Previous frame image: " + prev_frame);
     }
 
     private PropertiesComponent projectLevelPropertiesComponent() {
@@ -104,8 +108,6 @@ public class ProjectLabelBackgroundImage {
                 filePath.toFile().deleteOnExit();
                 ImageIO.write(bufferedImage, "png", filePath.toFile());
                 resultingImage = filePath.toFile().getAbsolutePath();
-                LOG.warn("resulting image path: " + resultingImage);
-                Runtime.getRuntime().exec(new String[]{"open", resultingImage});
             } catch (IOException e) {
                 LOG.error("Exception while creating project label background image", e);
             }

@@ -30,7 +30,10 @@ public class PluginConfiguration {
     private JRadioButton editorImageBottomRightRadioButton;
     private JRadioButton editorImageTopLeftRadioButton;
     private JRadioButton editorImageBottomLeftRadioButton;
-
+    private JRadioButton editorImageCenterRadioButton;
+    private JLabel editorBackgroundOpacityLabel;
+    private JSpinner editorImageBackgroundOpacity;
+    private SpinnerNumberModel editorImageBackgroundOpacityModel;
     private ColorField colorFieldTextColor;
     private ColorField colorFieldBackgroundColor;
 
@@ -75,13 +78,18 @@ public class PluginConfiguration {
             }
         });
 
+        this.editorImageBackgroundOpacityModel = new SpinnerNumberModel(15, 0, 100, 1);
+        this.editorImageBackgroundOpacity.setModel(this.editorImageBackgroundOpacityModel);
+
         ButtonGroup buttonGroup = new ButtonGroup();
         Stream.of(editorImageHiddenRadioButton,
                         editorImageTopLeftRadioButton,
                         editorImageTopRightRadioButton,
                         editorImageBottomRightRadioButton,
-                        editorImageBottomLeftRadioButton)
+                        editorImageBottomLeftRadioButton,
+                        editorImageCenterRadioButton)
                 .forEach(buttonGroup::add);
+
     }
 
     public void setTextColor(Color color) {
@@ -167,6 +175,8 @@ public class PluginConfiguration {
             return BackgroundImagePosition.BOTTOM_RIGHT;
         } else if (editorImageBottomLeftRadioButton.isSelected()) {
             return BackgroundImagePosition.BOTTOM_LEFT;
+        } else if (editorImageCenterRadioButton.isSelected()) {
+            return BackgroundImagePosition.CENTER;
         } else {
             return BackgroundImagePosition.HIDDEN;
         }
@@ -175,22 +185,21 @@ public class PluginConfiguration {
     public void setBackgroundImagePosition(@NotNull BackgroundImagePosition position) {
         Objects.requireNonNull(position);
         switch (position) {
-            case TOP_LEFT:
-                editorImageTopLeftRadioButton.setSelected(true);
-                break;
-            case TOP_RIGHT:
-                editorImageTopRightRadioButton.setSelected(true);
-                break;
-            case BOTTOM_RIGHT:
-                editorImageBottomRightRadioButton.setSelected(true);
-                break;
-            case BOTTOM_LEFT:
-                editorImageBottomLeftRadioButton.setSelected(true);
-                break;
-            case HIDDEN:
-                editorImageHiddenRadioButton.setSelected(true);
-                break;
+            case TOP_LEFT -> editorImageTopLeftRadioButton.setSelected(true);
+            case TOP_RIGHT -> editorImageTopRightRadioButton.setSelected(true);
+            case BOTTOM_RIGHT -> editorImageBottomRightRadioButton.setSelected(true);
+            case BOTTOM_LEFT -> editorImageBottomLeftRadioButton.setSelected(true);
+            case CENTER -> editorImageCenterRadioButton.setSelected(true);
+            default -> editorImageHiddenRadioButton.setSelected(true);
         }
+    }
+
+    public void setBackgroundImageOpacity(int opacity) {
+        this.editorImageBackgroundOpacityModel.setValue(opacity);
+    }
+
+    public int getBackgroundImageOpacity() {
+        return this.editorImageBackgroundOpacityModel.getNumber().intValue();
     }
 
     /**
