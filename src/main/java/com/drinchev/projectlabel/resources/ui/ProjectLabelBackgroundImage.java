@@ -87,12 +87,18 @@ public class ProjectLabelBackgroundImage {
 
 
     private void createImage() {
-
-
         if (bufferedImage == null) {
             try {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
-                bufferedImage = renderer.renderLabel(new Dimension(JBUIScale.scale(1024), JBUIScale.scale(768)), JBUIScale.scale(5));
+                Dimension preferredImageRation = renderer.getPreferredImageRatio();
+                final int paddingX = JBUIScale.scale(100);
+                final int paddingY = JBUIScale.scale(100);
+                // we want to have a 800x600 image, but prefer it to have the same ratio as the project label, so we scale it accordingly
+                final int targetWidth = 800;
+                final int targetHeight = (int) Math.round(targetWidth / preferredImageRation.getWidth() * preferredImageRation.getHeight());
+                bufferedImage = renderer.renderLabel(
+                        new Dimension(targetWidth+2*paddingX, targetHeight+2*paddingY),
+                        new Dimension(paddingX, paddingY));
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();

@@ -45,17 +45,23 @@ public class ProjectLabelAWTRenderer {
     }
 
 
+    public BufferedImage renderLabel(Dimension targetArea) {
+        return renderLabel(targetArea, new Dimension(0, 0));
+    }
 
-    public BufferedImage renderLabel(Dimension targetArea, double zoomFactor) {
+    public BufferedImage renderLabel(Dimension targetArea, Dimension border) {
 
         BufferedImage bufferedImage = ImageUtil.createImage(targetArea.width, targetArea.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
         g2d.setRenderingHints(RENDERING_HINTS);
 
+        final String label = getLabel();
+
+        double zoomFactor = calculateZoomFactor(label, targetArea, border);
+
         final Font font = getFont(zoomFactor);
 
-        final String label = getLabel();
 
         final JBColor backgroundColor = getBackgroundColor();
 
@@ -91,6 +97,42 @@ public class ProjectLabelAWTRenderer {
 
         return bufferedImage;
     }
+
+    private double calculateZoomFactor(String label, Dimension targetArea, Dimension border) {
+       int targetHeight = targetArea.height - 2*border.height;
+       int targetWidth = targetArea.width - 2*border.width;
+
+       Font defaultFont = getFont(1.0);
+
+       Dimension stringBounds = getStringBounds(defaultFont, label);
+       double zoomFactorX = targetWidth / stringBounds.getWidth();
+       double zoomFactorY = targetHeight / stringBounds.getHeight();
+
+         return Math.min(zoomFactorX, zoomFactorY);
+    }
+
+    private Dimension getStringBounds(Font font, String label) {
+        Dimension stringBounds = getTextDimensions(font, label);
+        return new Dimension((int)Math.round(stringBounds.getWidth() + 2 * HORIZONTAL_PADDING), (int) Math.round(stringBounds.getHeight() + 2 * VERTICAL_PADDING));
+    }
+
+    public Dimension getPreferredImageRatio() {
+        Dimension stringBounds = getStringBounds(getFont(1.0), getLabel());
+
+        // optimize fractions
+        int a = stringBounds.width;
+        int b = stringBounds.height;
+        int h;
+        while(b != 0){
+            h = a%b;
+            a = b;
+            b = h;
+        }
+        // now a
+        return new Dimension(stringBounds.width/a, stringBounds.height/a);
+    }
+
+
 
     private int getHorizontalPadding(Double zoomFactor) {
         return (int) Math.round(HORIZONTAL_PADDING * zoomFactor);

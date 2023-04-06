@@ -11,7 +11,6 @@ import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
-import com.intellij.util.ui.ImageUtil;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
@@ -21,7 +20,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
-import java.awt.image.BufferedImage;
 
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
@@ -166,7 +164,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
             Dimension size = getSize();
             int height = size.height - (2 * VERTICAL_MARGIN);
             ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
-            bufferedImage = renderer.renderLabel(new Dimension(size.width, height), 1);
+            bufferedImage = renderer.renderLabel(new Dimension(size.width, height));
         }
 
         UIUtil.drawImage(graphics, bufferedImage, 0, VERTICAL_MARGIN, null);
