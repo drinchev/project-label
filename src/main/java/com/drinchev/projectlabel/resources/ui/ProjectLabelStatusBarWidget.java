@@ -34,6 +34,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
     private static final int HORIZONTAL_PADDING = 18;
     private static final int VERTICAL_PADDING = 2;
+    private static final int VERTICAL_MARGIN = 5;
     private static final int HEIGHT = 12;
 
     private final Project project;
@@ -166,21 +167,20 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
             Dimension size = getSize();
             final Dimension arcs = new Dimension(8, 8);
 
-            // image
-            bufferedImage = ImageUtil.createImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+            FontMetrics metrics = graphics.getFontMetrics(font);
+
+            bufferedImage = ImageUtil.createImage(size.width, size.height - VERTICAL_MARGIN, BufferedImage.TYPE_INT_ARGB);
             Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics().create();
 
             graphics2D.setRenderingHints(HINTS);
 
             // background
             graphics2D.setColor(backgroundColor);
-            graphics2D.fillRoundRect(0, 0, size.width, size.height, arcs.width, arcs.height);
+            graphics2D.fillRoundRect(0, VERTICAL_MARGIN, size.width, size.height - (2 * VERTICAL_MARGIN), arcs.width, arcs.height);
 
             // label
             graphics2D.setColor(textColor);
             graphics2D.setFont(font);
-
-            FontMetrics metrics = graphics.getFontMetrics(font);
 
             graphics2D.drawString(
                     label,
