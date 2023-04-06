@@ -1,5 +1,4 @@
 <idea-plugin>
-
     <id>com.drinchev.projectlabel</id>
     <name>Project Label</name>
     <vendor email="drinchev@gmail.com" url="https://github.com/drinchev/project-label">Ivan Drinchev</vendor>
@@ -17,11 +16,4 @@
     <actions>
         <!-- Add your actions here -->
     </actions>
-
-    <project-components>
-        <!-- Add your project components here -->
-        <component>
-            <implementation-class>com.drinchev.projectlabel.ProjectLabelProjectComponent</implementation-class>
-        </component>
-    </project-components>
 </idea-plugin>

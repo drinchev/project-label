@@ -1,17 +1,17 @@
 package com.drinchev.projectlabel;
 
 import com.drinchev.projectlabel.resources.ui.ProjectLabelStatusBarWidget;
-
-import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 
-public class ProjectLabelProjectComponent implements ProjectComponent {
+@Service
+public final class ProjectLabelService {
 
-    private Project project;
+    private final Project project;
 
-    public ProjectLabelProjectComponent(Project project) {
+    public ProjectLabelService(Project project) {
         this.project = project;
     }
 
@@ -23,4 +23,5 @@ public class ProjectLabelProjectComponent implements ProjectComponent {
             statusBarWidget.updateUI();
         }
     }
+
 }

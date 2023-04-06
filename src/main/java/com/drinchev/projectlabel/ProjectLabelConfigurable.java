@@ -52,14 +52,13 @@ public class ProjectLabelConfigurable implements Configurable {
     }
 
     public boolean isModified() {
-        return
-                !UtilsColor.isEqual(projectPreferences.getBackgroundColor(), preferencesPanel.getBackgroundColor())
-                        || !UtilsColor.isEqual(projectPreferences.getTextColor(), preferencesPanel.getTextColor())
-                        || projectPreferences.getFontSize() != preferencesPanel.getFontSize()
-                        || !projectPreferences.getLabel().equals(preferencesPanel.getLabel())
-                        || !projectPreferences.getFontName().equals(preferencesPanel.getFontName())
-                        || applicationPreferences.getFontSize() != preferencesPanel.getGlobalFontSize()
-                        || !applicationPreferences.getFontName().equals(preferencesPanel.getGlobalFontName());
+        return !UtilsColor.isEqual(projectPreferences.getBackgroundColor(), preferencesPanel.getBackgroundColor()) ||
+                !UtilsColor.isEqual(projectPreferences.getTextColor(), preferencesPanel.getTextColor()) ||
+                projectPreferences.getFontSize() != preferencesPanel.getFontSize() ||
+                !projectPreferences.getLabel().equals(preferencesPanel.getLabel()) ||
+                !projectPreferences.getFontName().equals(preferencesPanel.getFontName()) ||
+                applicationPreferences.getFontSize() != preferencesPanel.getGlobalFontSize() ||
+                !applicationPreferences.getFontName().equals(preferencesPanel.getGlobalFontName());
     }
 
     public void apply() {
@@ -72,9 +71,9 @@ public class ProjectLabelConfigurable implements Configurable {
             applicationPreferences.setFontSize(preferencesPanel.getGlobalFontSize());
             applicationPreferences.setFontName(preferencesPanel.getGlobalFontName());
             if (project != null) {
-                ProjectLabelProjectComponent component = project.getComponent(ProjectLabelProjectComponent.class);
-                if (component != null) {
-                    component.onSettingsChanged();
+                ProjectLabelService projectService = project.getService(ProjectLabelService.class);
+                if (projectService != null) {
+                    projectService.onSettingsChanged();
                 }
             }
         }

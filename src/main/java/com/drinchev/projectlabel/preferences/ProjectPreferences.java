@@ -3,7 +3,6 @@ package com.drinchev.projectlabel.preferences;
 import com.drinchev.projectlabel.utils.UtilsColor;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 
@@ -39,7 +38,7 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
     private String fontName = null;
 
     public static ProjectPreferences getInstance(Project project) {
-        return ServiceManager.getService(project, ProjectPreferences.class);
+        return project.getService(ProjectPreferences.class);
     }
 
     @Nullable
