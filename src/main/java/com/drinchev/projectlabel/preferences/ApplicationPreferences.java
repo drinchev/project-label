@@ -1,11 +1,10 @@
 package com.drinchev.projectlabel.preferences;
 
 import com.drinchev.projectlabel.utils.UtilsFont;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.util.ui.JBFont;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +27,7 @@ public class ApplicationPreferences implements PersistentStateComponent<Applicat
     private String fontName = UtilsFont.getStatusBarItemFont().getFontName();
 
     public static ApplicationPreferences getInstance() {
-        return ServiceManager.getService(ApplicationPreferences.class);
+        return ApplicationManager.getApplication().getService(ApplicationPreferences.class);
     }
 
     @Nullable
