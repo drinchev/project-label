@@ -46,7 +46,7 @@ public class ProjectLabelAWTRenderer {
 
 
 
-    public BufferedImage renderLabel(Rectangle targetArea, double zoomFactor) {
+    public BufferedImage renderLabel(Dimension targetArea, double zoomFactor) {
 
         BufferedImage bufferedImage = ImageUtil.createImage(targetArea.width, targetArea.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();

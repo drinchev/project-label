@@ -8,6 +8,7 @@ import com.intellij.openapi.components.Service.Level;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
+import com.intellij.ui.scale.JBUIScale;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -91,7 +92,7 @@ public class ProjectLabelBackgroundImage {
         if (bufferedImage == null) {
             try {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
-                bufferedImage = renderer.renderLabel(new Rectangle(0, 0, 1024, 768), 5);
+                bufferedImage = renderer.renderLabel(new Dimension(JBUIScale.scale(1024), JBUIScale.scale(768)), JBUIScale.scale(5));
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();
