@@ -1,11 +1,15 @@
 package com.drinchev.projectlabel.resources.ui;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.FontComboBox;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -25,22 +29,32 @@ public class PluginConfiguration {
     private JCheckBox checkBoxInheritFontSize;
     private JCheckBox checkBoxInheritFont;
     private FontComboBox fontComboBoxGlobalFont;
-    private JRadioButton editorImageTopRightRadioButton;
-    private JRadioButton editorImageBottomRightRadioButton;
-    private JRadioButton editorImageTopLeftRadioButton;
-    private JRadioButton editorImageBottomLeftRadioButton;
-    private JRadioButton editorImageCenterRadioButton;
     private JLabel editorBackgroundOpacityLabel;
     private JSpinner editorImageBackgroundOpacity;
     private JCheckBox editorImageEnabledCheckbox;
     private JLabel editorImageBackgroundOpacityUnitLabel;
     private JLabel editorImagePositionLabel;
-    private SpinnerNumberModel editorImageBackgroundOpacityModel;
+    private JComboBox<String> editorImagePositionComboBox;
+    private final SpinnerNumberModel editorImageBackgroundOpacityModel;
     private ColorField colorFieldTextColor;
     private ColorField colorFieldBackgroundColor;
 
     private SpinnerNumberModel spinnerFontSizeModel;
     private SpinnerNumberModel spinnerGlobalFontSizeModel;
+
+    private static final String BACKGROUND_IMAGE_POSITION_TOP_LEFT = "Top Left";
+    private static final String BACKGROUND_IMAGE_POSITION_TOP_RIGHT = "Top Right";
+    private static final String BACKGROUND_IMAGE_POSITION_BOTTOM_RIGHT = "Bottom Right";
+    private static final String BACKGROUND_IMAGE_POSITION_BOTTOM_LEFT = "Bottom Left";
+    private static final String BACKGROUND_IMAGE_POSITION_CENTER = "Center";
+
+    private final static Map<String, Icon> LABEL_POSITIONS = Collections.unmodifiableMap(new LinkedHashMap<>() {{ // linked hash map to preserve order
+        put(BACKGROUND_IMAGE_POSITION_CENTER, AllIcons.General.FitContent);
+        put(BACKGROUND_IMAGE_POSITION_TOP_LEFT, AllIcons.Actions.MoveToTopLeft);
+        put(BACKGROUND_IMAGE_POSITION_TOP_RIGHT, AllIcons.Actions.MoveToTopRight);
+        put(BACKGROUND_IMAGE_POSITION_BOTTOM_RIGHT, AllIcons.Actions.MoveToBottomRight);
+        put(BACKGROUND_IMAGE_POSITION_BOTTOM_LEFT, AllIcons.Actions.MoveToBottomLeft);
+    }});
 
     /**
      * Constructor
@@ -88,14 +102,8 @@ public class PluginConfiguration {
         this.editorImageBackgroundOpacityModel = new SpinnerNumberModel(15, 0, 100, 1);
         this.editorImageBackgroundOpacity.setModel(this.editorImageBackgroundOpacityModel);
 
-        ButtonGroup buttonGroup = new ButtonGroup();
-        Stream.of(editorImageTopLeftRadioButton,
-                        editorImageTopRightRadioButton,
-                        editorImageBottomRightRadioButton,
-                        editorImageBottomLeftRadioButton,
-                        editorImageCenterRadioButton)
-                .forEach(buttonGroup::add);
-
+        this.editorImagePositionComboBox.setRenderer(new LabelWithIconRenderer());
+        this.editorImagePositionComboBox.setModel(new DefaultComboBoxModel<>(LABEL_POSITIONS.keySet().toArray(new String[0])));
     }
 
     public void setTextColor(Color color) {
@@ -173,11 +181,7 @@ public class PluginConfiguration {
 
     private void updateBackgroundImageEnabledStates(boolean enabled) {
         Stream.of(this.editorImagePositionLabel,
-                        this.editorImageTopLeftRadioButton,
-                        this.editorImageTopRightRadioButton,
-                        this.editorImageBottomRightRadioButton,
-                        this.editorImageBottomLeftRadioButton,
-                        this.editorImageCenterRadioButton,
+                        this.editorImagePositionComboBox,
                         this.editorBackgroundOpacityLabel,
                         this.editorImageBackgroundOpacity,
                         this.editorImageBackgroundOpacityUnitLabel)
@@ -189,20 +193,27 @@ public class PluginConfiguration {
         if (!editorImageEnabledCheckbox.isSelected()) {
             return BackgroundImagePosition.HIDDEN;
         }
-        if (editorImageTopLeftRadioButton.isSelected()) {
-            return BackgroundImagePosition.TOP_LEFT;
-        } else if (editorImageTopRightRadioButton.isSelected()) {
-            return BackgroundImagePosition.TOP_RIGHT;
-        } else if (editorImageBottomRightRadioButton.isSelected()) {
-            return BackgroundImagePosition.BOTTOM_RIGHT;
-        } else if (editorImageBottomLeftRadioButton.isSelected()) {
-            return BackgroundImagePosition.BOTTOM_LEFT;
-        } else if (editorImageCenterRadioButton.isSelected()) {
-            return BackgroundImagePosition.CENTER;
-        } else {
+        String position = (String) editorImagePositionComboBox.getSelectedItem();
+        if (position == null) {
             // should never happen
             return BackgroundImagePosition.HIDDEN;
         }
+        if (position.equals(BACKGROUND_IMAGE_POSITION_TOP_LEFT)) {
+            return BackgroundImagePosition.TOP_LEFT;
+        }
+        if (position.equals(BACKGROUND_IMAGE_POSITION_TOP_RIGHT)) {
+            return BackgroundImagePosition.TOP_RIGHT;
+        }
+        if (position.equals(BACKGROUND_IMAGE_POSITION_BOTTOM_RIGHT)) {
+            return BackgroundImagePosition.BOTTOM_RIGHT;
+        }
+        if (position.equals(BACKGROUND_IMAGE_POSITION_BOTTOM_LEFT)) {
+            return BackgroundImagePosition.BOTTOM_LEFT;
+        }
+        if (position.equals(BACKGROUND_IMAGE_POSITION_CENTER)) {
+            return BackgroundImagePosition.CENTER;
+        }
+        throw new IllegalStateException("Unknown position: " + position);
     }
 
     public void setBackgroundImagePosition(@NotNull BackgroundImagePosition position) {
@@ -215,11 +226,11 @@ public class PluginConfiguration {
         editorImageEnabledCheckbox.setSelected(true);
         updateBackgroundImageEnabledStates(true);
         switch (position) {
-            case TOP_LEFT -> editorImageTopLeftRadioButton.setSelected(true);
-            case TOP_RIGHT -> editorImageTopRightRadioButton.setSelected(true);
-            case BOTTOM_RIGHT -> editorImageBottomRightRadioButton.setSelected(true);
-            case BOTTOM_LEFT -> editorImageBottomLeftRadioButton.setSelected(true);
-            case CENTER -> editorImageCenterRadioButton.setSelected(true);
+            case TOP_LEFT -> editorImagePositionComboBox.setSelectedItem(BACKGROUND_IMAGE_POSITION_TOP_LEFT);
+            case TOP_RIGHT -> editorImagePositionComboBox.setSelectedItem(BACKGROUND_IMAGE_POSITION_TOP_RIGHT);
+            case BOTTOM_RIGHT -> editorImagePositionComboBox.setSelectedItem(BACKGROUND_IMAGE_POSITION_BOTTOM_RIGHT);
+            case BOTTOM_LEFT -> editorImagePositionComboBox.setSelectedItem(BACKGROUND_IMAGE_POSITION_BOTTOM_LEFT);
+            case CENTER -> editorImagePositionComboBox.setSelectedItem(BACKGROUND_IMAGE_POSITION_CENTER);
         }
     }
 
@@ -238,4 +249,13 @@ public class PluginConfiguration {
         return rootPanel;
     }
 
+    private static class LabelWithIconRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            label.setIcon(LABEL_POSITIONS.get((String) value));
+            return label;
+        }
+    }
 }
