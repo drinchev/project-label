@@ -25,7 +25,6 @@ public class PluginConfiguration {
     private JCheckBox checkBoxInheritFontSize;
     private JCheckBox checkBoxInheritFont;
     private FontComboBox fontComboBoxGlobalFont;
-    private JRadioButton editorImageHiddenRadioButton;
     private JRadioButton editorImageTopRightRadioButton;
     private JRadioButton editorImageBottomRightRadioButton;
     private JRadioButton editorImageTopLeftRadioButton;
@@ -33,6 +32,9 @@ public class PluginConfiguration {
     private JRadioButton editorImageCenterRadioButton;
     private JLabel editorBackgroundOpacityLabel;
     private JSpinner editorImageBackgroundOpacity;
+    private JCheckBox editorImageEnabledCheckbox;
+    private JLabel editorImageBackgroundOpacityUnitLabel;
+    private JLabel editorImagePositionLabel;
     private SpinnerNumberModel editorImageBackgroundOpacityModel;
     private ColorField colorFieldTextColor;
     private ColorField colorFieldBackgroundColor;
@@ -78,12 +80,16 @@ public class PluginConfiguration {
             }
         });
 
+        this.editorImageEnabledCheckbox.addActionListener(event -> {
+            boolean enabled = this.editorImageEnabledCheckbox.isSelected();
+            updateBackgroundImageEnabledStates(enabled);
+        });
+
         this.editorImageBackgroundOpacityModel = new SpinnerNumberModel(15, 0, 100, 1);
         this.editorImageBackgroundOpacity.setModel(this.editorImageBackgroundOpacityModel);
 
         ButtonGroup buttonGroup = new ButtonGroup();
-        Stream.of(editorImageHiddenRadioButton,
-                        editorImageTopLeftRadioButton,
+        Stream.of(editorImageTopLeftRadioButton,
                         editorImageTopRightRadioButton,
                         editorImageBottomRightRadioButton,
                         editorImageBottomLeftRadioButton,
@@ -165,8 +171,24 @@ public class PluginConfiguration {
         return name == null ? "Dialog" : name;
     }
 
+    private void updateBackgroundImageEnabledStates(boolean enabled) {
+        Stream.of(this.editorImagePositionLabel,
+                        this.editorImageTopLeftRadioButton,
+                        this.editorImageTopRightRadioButton,
+                        this.editorImageBottomRightRadioButton,
+                        this.editorImageBottomLeftRadioButton,
+                        this.editorImageCenterRadioButton,
+                        this.editorBackgroundOpacityLabel,
+                        this.editorImageBackgroundOpacity,
+                        this.editorImageBackgroundOpacityUnitLabel)
+                .forEach(component -> component.setEnabled(enabled));
+    }
+
     // backgroundImage
     public BackgroundImagePosition getBackgroundImagePosition() {
+        if (!editorImageEnabledCheckbox.isSelected()) {
+            return BackgroundImagePosition.HIDDEN;
+        }
         if (editorImageTopLeftRadioButton.isSelected()) {
             return BackgroundImagePosition.TOP_LEFT;
         } else if (editorImageTopRightRadioButton.isSelected()) {
@@ -178,19 +200,26 @@ public class PluginConfiguration {
         } else if (editorImageCenterRadioButton.isSelected()) {
             return BackgroundImagePosition.CENTER;
         } else {
+            // should never happen
             return BackgroundImagePosition.HIDDEN;
         }
     }
 
     public void setBackgroundImagePosition(@NotNull BackgroundImagePosition position) {
         Objects.requireNonNull(position);
+        if (position == BackgroundImagePosition.HIDDEN) {
+            editorImageEnabledCheckbox.setSelected(false);
+            updateBackgroundImageEnabledStates(false);
+            return;
+        }
+        editorImageEnabledCheckbox.setSelected(true);
+        updateBackgroundImageEnabledStates(true);
         switch (position) {
             case TOP_LEFT -> editorImageTopLeftRadioButton.setSelected(true);
             case TOP_RIGHT -> editorImageTopRightRadioButton.setSelected(true);
             case BOTTOM_RIGHT -> editorImageBottomRightRadioButton.setSelected(true);
             case BOTTOM_LEFT -> editorImageBottomLeftRadioButton.setSelected(true);
             case CENTER -> editorImageCenterRadioButton.setSelected(true);
-            default -> editorImageHiddenRadioButton.setSelected(true);
         }
     }
 
