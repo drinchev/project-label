@@ -3,6 +3,7 @@ package com.drinchev.projectlabel.resources.ui;
 import com.drinchev.projectlabel.preferences.ApplicationPreferences;
 import com.drinchev.projectlabel.preferences.ProjectPreferences;
 import com.drinchev.projectlabel.utils.UtilsFont;
+import com.drinchev.projectlabel.utils.UtilsUI;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
@@ -34,6 +35,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
     private static final int HORIZONTAL_PADDING = 18;
     private static final int VERTICAL_PADDING = 2;
+    private static final int VERTICAL_MARGIN = UtilsUI.isNewUI() ? 5 : 3;
     private static final int HEIGHT = 12;
 
     private final Project project;
@@ -165,32 +167,32 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
             Dimension size = getSize();
             final Dimension arcs = new Dimension(8, 8);
+            int height = size.height - (2 * VERTICAL_MARGIN);
 
-            // image
-            bufferedImage = ImageUtil.createImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+            FontMetrics metrics = graphics.getFontMetrics(font);
+
+            bufferedImage = ImageUtil.createImage(size.width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics().create();
 
             graphics2D.setRenderingHints(HINTS);
 
             // background
             graphics2D.setColor(backgroundColor);
-            graphics2D.fillRoundRect(0, 0, size.width, size.height, arcs.width, arcs.height);
+            graphics2D.fillRoundRect(0, 0, size.width, height, arcs.width, arcs.height);
 
             // label
             graphics2D.setColor(textColor);
             graphics2D.setFont(font);
 
-            FontMetrics metrics = graphics.getFontMetrics(font);
-
             graphics2D.drawString(
                     label,
                     (size.width - labelWidth) / 2,
-                    (size.height - metrics.getHeight()) / 2 + metrics.getAscent()
+                    (height - metrics.getHeight()) / 2 + metrics.getAscent()
             );
             graphics2D.dispose();
         }
 
-        UIUtil.drawImage(graphics, bufferedImage, 0, 0, null);
+        UIUtil.drawImage(graphics, bufferedImage, 0, VERTICAL_MARGIN, null);
     }
 
     @Override

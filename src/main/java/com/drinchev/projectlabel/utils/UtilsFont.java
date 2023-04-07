@@ -41,7 +41,15 @@ public class UtilsFont {
     }
 
     public static JBFont getStatusBarItemFont() {
-        return JBFont.medium();
+        try {
+            // while the new UI is experimental, we have to carefully choose the font size
+            if (JBFont.class.getDeclaredMethod("smallOrNewUiMedium") != null) {
+                return UtilsUI.isNewUI() ? JBFont.medium() : JBFont.small();
+            }
+        } catch (NoSuchMethodException e) {
+            return JBFont.medium();
+        }
+        throw new IllegalStateException("Unable to determine the status bar font size");
     }
 
 }
