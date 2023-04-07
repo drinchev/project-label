@@ -1,6 +1,5 @@
 package com.drinchev.projectlabel.utils;
 
-import com.intellij.openapi.util.registry.Registry;
 import com.intellij.util.ui.JBFont;
 
 import java.awt.*;
@@ -45,7 +44,7 @@ public class UtilsFont {
         try {
             // while the new UI is experimental, we have to carefully choose the font size
             if (JBFont.class.getDeclaredMethod("smallOrNewUiMedium") != null) {
-                return Registry.is("ide.experimental.ui") ? JBFont.medium() : JBFont.small();
+                return UtilsUI.isNewUI() ? JBFont.medium() : JBFont.small();
             }
         } catch (NoSuchMethodException e) {
             return JBFont.medium();
