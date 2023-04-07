@@ -6,6 +6,7 @@ import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.registry.Registry;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.ui.JBColor;
@@ -34,7 +35,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
     private static final int HORIZONTAL_PADDING = 18;
     private static final int VERTICAL_PADDING = 2;
-    private static final int VERTICAL_MARGIN = 5;
+    private static final int VERTICAL_MARGIN = Registry.is("ide.experimental.ui") ? 5 : 3;
     private static final int HEIGHT = 12;
 
     private final Project project;
