@@ -3,6 +3,9 @@
 # Project Label Changelog
 
 ## [Unreleased]
+### Fixed
+- Label is too big in the new UI
+- Larger font size in the old UI
 
 ## [1.1.0] - 2023-04-06
 
