@@ -9,7 +9,6 @@ import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
@@ -18,11 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 
-import static java.util.Map.entry;
-import static java.util.Map.ofEntries;
 
 public class ProjectLabelStatusBarWidget extends JButton implements CustomStatusBarWidget {
 
@@ -38,26 +34,13 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
     private final Project project;
 
-    private Dimension textDimension;
     private Image bufferedImage;
 
     private final ProjectPreferences projectPreferences;
     private final ApplicationPreferences applicationPreferences;
 
     private String label;
-    private Color backgroundColor;
-    private Color textColor;
     private Font font;
-
-    private static final RenderingHints HINTS = new RenderingHints(
-            ofEntries(
-                    entry(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY),
-                    entry(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON),
-                    entry(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY),
-                    entry(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON),
-                    entry(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
-            )
-    );
 
     public ProjectLabelStatusBarWidget(final Project project, ProjectPreferences projectPreferences, ApplicationPreferences applicationPreferences) {
         addActionListener(event -> {
@@ -80,8 +63,6 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     }
 
     private void setStateFromSettings() {
-        backgroundColor = new JBColor(projectPreferences.getBackgroundColor(), projectPreferences.getBackgroundColor());
-        textColor = new JBColor(projectPreferences.getTextColor(), projectPreferences.getTextColor());
         label = projectPreferences.getLabel().isEmpty() ? this.project.getName().toUpperCase() : projectPreferences.getLabel();
         setToolTipText("Project Label: " + label);
 
@@ -112,24 +93,10 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
         try {
             setStateFromSettings();
             bufferedImage = null;
-            textDimension = null;
             repaint();
         } catch (Throwable e) {
             LOG.error(e);
         }
-    }
-
-    private Dimension getTextDimensions() {
-        if (textDimension == null) {
-            FontRenderContext renderContext = new FontRenderContext(font.getTransform(), true, true);
-
-            textDimension = new Dimension(
-                    (int) (font.getStringBounds(label, renderContext).getWidth()),
-                    (int) (font.getStringBounds(label, renderContext).getHeight())
-            );
-        }
-
-        return textDimension;
     }
 
     @Override
@@ -172,8 +139,10 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
     @Override
     public Dimension getPreferredSize() {
-        int width = getTextDimensions().width + (HORIZONTAL_PADDING * 2);
-        int textHeight = getTextDimensions().height;
+        ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
+        Dimension textDimensions = renderer.getTextDimensions();
+        int width = textDimensions.width + (HORIZONTAL_PADDING * 2);
+        int textHeight = textDimensions.height;
         int height = textHeight > HEIGHT ? textHeight + (VERTICAL_PADDING * 2) + (VERTICAL_MARGIN * 2) : HEIGHT;
         return new Dimension(JBUIScale.scale(width), JBUIScale.scale(height));
     }

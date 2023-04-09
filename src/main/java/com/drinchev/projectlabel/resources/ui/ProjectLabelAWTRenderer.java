@@ -165,6 +165,10 @@ public class ProjectLabelAWTRenderer {
         return new JBColor(projectPreferences.getTextColor(), projectPreferences.getTextColor());
     }
 
+    public Dimension getTextDimensions() {
+        return getTextDimensions(getFont(1.0), getLabel());
+    }
+
     private Dimension getTextDimensions(Font font, String label) {
             FontRenderContext renderContext = new FontRenderContext(font.getTransform(), true, true);
 
