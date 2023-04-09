@@ -1,6 +1,7 @@
 package com.drinchev.projectlabel.resources.ui;
 
 import com.drinchev.projectlabel.preferences.ApplicationPreferences;
+import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.preferences.ProjectPreferences;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.components.Service;
@@ -25,8 +26,6 @@ import static java.util.Objects.requireNonNull;
 public class ProjectLabelBackgroundImage {
 
     private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
-    private final ProjectPreferences projectPreferences;
-    private final ApplicationPreferences applicationPreferences;
 
     private BufferedImage bufferedImage;
 
@@ -34,11 +33,11 @@ public class ProjectLabelBackgroundImage {
 
     private final Project project;
 
+    private final PreferencesReader preferences;
+
     public ProjectLabelBackgroundImage(@NotNull Project project) {
         this.project = requireNonNull(project);
-        projectPreferences = ProjectPreferences.getInstance(project);
-        applicationPreferences = ApplicationPreferences.getInstance();
-
+        this.preferences = new PreferencesReader(project, ProjectPreferences.getInstance(project), ApplicationPreferences.getInstance());
     }
 
     public void showImage() {
@@ -51,13 +50,13 @@ public class ProjectLabelBackgroundImage {
     }
 
     private boolean shouldShowBackgroundImage() {
-        return projectPreferences.getBackgroundImagePosition() != BackgroundImagePosition.HIDDEN;
+        return preferences.backgroundImagePosition() != BackgroundImagePosition.HIDDEN;
     }
 
     private void setImageToIDE() {
         PropertiesComponent prop = projectLevelPropertiesComponent();
-        String opacity = String.valueOf(projectPreferences.getBackgroundImageOpacity());
-        String imageProp = String.format("%s,%s,plain,%s", resultingImage, opacity, projectPreferences.getBackgroundImagePosition().name().toLowerCase());
+        String opacity = String.valueOf(preferences.backgroundImageOpacity());
+        String imageProp = String.format("%s,%s,plain,%s", resultingImage, opacity, preferences.backgroundImagePosition().name().toLowerCase());
         String prev_editor = prop.getValue(IdeBackgroundUtil.EDITOR_PROP);
         prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp); // statt plain: tile (wiederholen), scale (zoomen)
         String prev_frame = prop.getValue(IdeBackgroundUtil.FRAME_PROP);
@@ -93,7 +92,7 @@ public class ProjectLabelBackgroundImage {
     private void createImage() {
         if (bufferedImage == null) {
             try {
-                ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
+                ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
                 Dimension preferredImageRation = renderer.getPreferredImageRatio();
                 final int paddingX = JBUIScale.scale(100);
                 final int paddingY = JBUIScale.scale(100);

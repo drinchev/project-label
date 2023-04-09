@@ -1,9 +1,7 @@
 package com.drinchev.projectlabel.resources.ui;
 
-import com.drinchev.projectlabel.preferences.ApplicationPreferences;
-import com.drinchev.projectlabel.preferences.ProjectPreferences;
+import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.utils.UtilsFont;
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
@@ -32,16 +30,11 @@ public class ProjectLabelAWTRenderer {
     public static final int HORIZONTAL_PADDING = 18;
     public static final int VERTICAL_PADDING = 2;
 
-    private final Project project;
-    private final ProjectPreferences projectPreferences;
-
-    private final ApplicationPreferences applicationPreferences;
+    private final PreferencesReader preferences;
 
 
-    public ProjectLabelAWTRenderer(@NotNull Project project, @NotNull ProjectPreferences projectPreferences, @NotNull ApplicationPreferences applicationPreferences) {
-        this.project = requireNonNull(project);
-        this.projectPreferences = requireNonNull(projectPreferences);
-        this.applicationPreferences = requireNonNull(applicationPreferences);
+    public ProjectLabelAWTRenderer(@NotNull PreferencesReader preferences) {
+        this.preferences = requireNonNull(preferences);
     }
 
 
@@ -56,7 +49,7 @@ public class ProjectLabelAWTRenderer {
 
         g2d.setRenderingHints(RENDERING_HINTS);
 
-        final String label = getLabel();
+        final String label = preferences.label();
 
         double zoomFactor = calculateZoomFactor(label, targetArea, border);
 
@@ -85,7 +78,6 @@ public class ProjectLabelAWTRenderer {
         // label
         g2d.setColor(textColor);
         g2d.setFont(font);
-//
 
         g2d.drawString(
                 label,
@@ -117,7 +109,7 @@ public class ProjectLabelAWTRenderer {
     }
 
     public Dimension getPreferredImageRatio() {
-        Dimension stringBounds = getStringBounds(getFont(1.0), getLabel());
+        Dimension stringBounds = getStringBounds(getFont(1.0), preferences.label());
 
         // optimize fractions
         int a = stringBounds.width;
@@ -143,30 +135,21 @@ public class ProjectLabelAWTRenderer {
     }
 
     private Font getFont(Double zoomFactor) {
-        Font font = projectPreferences.getFontName().isEmpty() ? applicationPreferences.getFont() : projectPreferences.getFont();
-        if (font == null) {
-            font = UtilsFont.getStatusBarItemFont();
-        }
+        Font font = preferences.font();
         font = UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, zoomFactor.floatValue()*font.getSize());
-
         return font;
     }
 
-    private String getLabel() {
-        String label = projectPreferences.getLabel().isEmpty() ? project.getName() : projectPreferences.getLabel();
-        return label;
-    }
-
     private JBColor getBackgroundColor() {
-        return new JBColor(projectPreferences.getBackgroundColor(), projectPreferences.getBackgroundColor());
+        return new JBColor(preferences.backgroundColor(), preferences.backgroundColor());
     }
 
     private JBColor getTextColor() {
-        return new JBColor(projectPreferences.getTextColor(), projectPreferences.getTextColor());
+        return new JBColor(preferences.textColor(), preferences.textColor());
     }
 
     public Dimension getTextDimensions() {
-        return getTextDimensions(getFont(1.0), getLabel());
+        return getTextDimensions(getFont(1.0), preferences.label());
     }
 
     private Dimension getTextDimensions(Font font, String label) {

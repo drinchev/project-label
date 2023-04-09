@@ -1,8 +1,6 @@
 package com.drinchev.projectlabel.resources.ui;
 
-import com.drinchev.projectlabel.preferences.ApplicationPreferences;
-import com.drinchev.projectlabel.preferences.ProjectPreferences;
-import com.drinchev.projectlabel.utils.UtilsFont;
+import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.utils.UtilsUI;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
@@ -17,7 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.TextAttribute;
+
+import static java.util.Objects.requireNonNull;
 
 
 public class ProjectLabelStatusBarWidget extends JButton implements CustomStatusBarWidget {
@@ -32,26 +31,19 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     private static final int VERTICAL_MARGIN = UtilsUI.isNewUI() ? 5 : 3;
     private static final int HEIGHT = 12;
 
-    private final Project project;
-
     private Image bufferedImage;
 
-    private final ProjectPreferences projectPreferences;
-    private final ApplicationPreferences applicationPreferences;
+    private final PreferencesReader preferences;
 
-    private String label;
-    private Font font;
+    public ProjectLabelStatusBarWidget(@NotNull Project project, @NotNull PreferencesReader preferences) {
+        requireNonNull(project);
+        this.preferences = requireNonNull(preferences);
 
-    public ProjectLabelStatusBarWidget(final Project project, ProjectPreferences projectPreferences, ApplicationPreferences applicationPreferences) {
         addActionListener(event -> {
             rebuildWidget();
             updateUI();
             ShowSettingsUtil.getInstance().showSettingsDialog(project, "Project Label");
         });
-
-        this.project = project;
-        this.projectPreferences = projectPreferences;
-        this.applicationPreferences = applicationPreferences;
 
         setStateFromSettings();
 
@@ -63,30 +55,8 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     }
 
     private void setStateFromSettings() {
-        label = projectPreferences.getLabel().isEmpty() ? this.project.getName().toUpperCase() : projectPreferences.getLabel();
+        String label = preferences.label();
         setToolTipText("Project Label: " + label);
-
-        float fontSize = fontSize();
-
-        this.font = fontOfSize(fontSize);
-    }
-
-    private Font fontOfSize(float fontSize) {
-        Font font = projectPreferences.getFontName().isEmpty() ? applicationPreferences.getFont() : projectPreferences.getFont();
-        if (font == null) {
-            font = UtilsFont.getStatusBarItemFont();
-        }
-        return UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, fontSize);
-    }
-
-    private float fontSize() {
-        float projectPreferencesFontSize = projectPreferences.getFontSize();
-        float applicationPreferencesFontSize = applicationPreferences.getFontSize();
-        float fontSize = JBUIScale.scaleFontSize(projectPreferencesFontSize == -1 ? applicationPreferencesFontSize : projectPreferencesFontSize);
-        if (fontSize == 0) {
-            fontSize = 8;
-        }
-        return fontSize;
     }
 
     public void rebuildWidget() {
@@ -130,7 +100,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
         if (bufferedImage == null) {
             Dimension size = getSize();
             int height = size.height - (2 * VERTICAL_MARGIN);
-            ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
+            ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
             bufferedImage = renderer.renderLabel(new Dimension(size.width, height));
         }
 
@@ -139,7 +109,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
     @Override
     public Dimension getPreferredSize() {
-        ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(project, projectPreferences, applicationPreferences);
+        ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
         Dimension textDimensions = renderer.getTextDimensions();
         int width = textDimensions.width + (HORIZONTAL_PADDING * 2);
         int textHeight = textDimensions.height;
