@@ -1,7 +1,7 @@
 package com.drinchev.projectlabel;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.ProjectActivity;
+import com.intellij.openapi.startup.ProjectPostStartupActivity;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.drinchev.projectlabel.resources.ui.ProjectLabelBackgroundImage;
 
-public class ProjectLabelStartupActivity implements ProjectActivity {
+public class ProjectLabelStartupActivity implements ProjectPostStartupActivity {
 
     @Nullable
     @Override

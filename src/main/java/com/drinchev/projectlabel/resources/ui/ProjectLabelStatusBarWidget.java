@@ -174,7 +174,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     public Dimension getPreferredSize() {
         int width = getTextDimensions().width + (HORIZONTAL_PADDING * 2);
         int textHeight = getTextDimensions().height;
-        int height = textHeight > HEIGHT ? textHeight + (VERTICAL_PADDING * 2) : HEIGHT;
+        int height = textHeight > HEIGHT ? textHeight + (VERTICAL_PADDING * 2) + (VERTICAL_MARGIN * 2) : HEIGHT;
         return new Dimension(JBUIScale.scale(width), JBUIScale.scale(height));
     }
 
