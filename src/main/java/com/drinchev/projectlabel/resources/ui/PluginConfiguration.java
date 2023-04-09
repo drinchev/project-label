@@ -38,7 +38,6 @@ public class PluginConfiguration {
     private final SpinnerNumberModel editorImageBackgroundOpacityModel;
     private ColorField colorFieldTextColor;
     private ColorField colorFieldBackgroundColor;
-
     private SpinnerNumberModel spinnerFontSizeModel;
     private SpinnerNumberModel spinnerGlobalFontSizeModel;
 
