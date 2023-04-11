@@ -58,7 +58,7 @@ public class ProjectLabelBackgroundImage {
         String opacity = String.valueOf(preferences.backgroundImageOpacity());
         String imageProp = String.format("%s,%s,plain,%s", resultingImage, opacity, preferences.backgroundImagePosition().name().toLowerCase());
         String prev_editor = prop.getValue(IdeBackgroundUtil.EDITOR_PROP);
-        prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp); // statt plain: tile (wiederholen), scale (zoomen)
+        prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp);
         String prev_frame = prop.getValue(IdeBackgroundUtil.FRAME_PROP);
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, imageProp);
         LOG.warn("Previous editor image: " + prev_editor);
