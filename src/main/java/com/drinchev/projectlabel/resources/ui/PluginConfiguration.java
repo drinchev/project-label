@@ -1,8 +1,10 @@
 package com.drinchev.projectlabel.resources.ui;
 
+import com.drinchev.projectlabel.utils.UtilsIcon;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.FontComboBox;
+import com.intellij.ui.IconManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -48,11 +50,11 @@ public class PluginConfiguration {
     private static final String BACKGROUND_IMAGE_POSITION_CENTER = "Center";
 
     private final static Map<String, Icon> LABEL_POSITIONS = Collections.unmodifiableMap(new LinkedHashMap<>() {{ // linked hash map to preserve order
-        put(BACKGROUND_IMAGE_POSITION_CENTER, AllIcons.General.FitContent);
-        put(BACKGROUND_IMAGE_POSITION_TOP_LEFT, AllIcons.Actions.MoveToTopLeft);
-        put(BACKGROUND_IMAGE_POSITION_TOP_RIGHT, AllIcons.Actions.MoveToTopRight);
-        put(BACKGROUND_IMAGE_POSITION_BOTTOM_RIGHT, AllIcons.Actions.MoveToBottomRight);
-        put(BACKGROUND_IMAGE_POSITION_BOTTOM_LEFT, AllIcons.Actions.MoveToBottomLeft);
+        put(BACKGROUND_IMAGE_POSITION_CENTER, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_center.svg"));
+        put(BACKGROUND_IMAGE_POSITION_TOP_LEFT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_left.svg"));
+        put(BACKGROUND_IMAGE_POSITION_TOP_RIGHT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_right.svg"));
+        put(BACKGROUND_IMAGE_POSITION_BOTTOM_RIGHT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_right.svg"));
+        put(BACKGROUND_IMAGE_POSITION_BOTTOM_LEFT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_left.svg"));
     }});
 
     /**

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#AFB1B3" fill-rule="evenodd" d="M 2 2 L 14 2 L 14 14 L 2 14 L 2 2 Z M 3 3 L 3 13 L 13 13 L 13 3 L 3 3 Z M 2.998 13.004 L 9 13 L 3 13 L 3 10 L 2.998 13.004 Z" transform="matrix(1 0 0 -1 0 16)"/>
+  <rect x="5.983" y="7.23" width="3.887" height="1.87" style="stroke: rgb(175, 177, 179); fill: rgb(175, 177, 179);"/>
+</svg>
