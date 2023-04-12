@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,6 +34,8 @@ public class ProjectLabelBackgroundImage {
     public static final int DEFAULT_HEIGHT = 100;
 
     public static final double TARGET_HEIGHT_PERCENTAGE = 0.07;
+
+    public static final double MAX_WIDTH_PERCENTAGE = 0.45;
 
     private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
@@ -135,21 +138,35 @@ public class ProjectLabelBackgroundImage {
         final int targetHeight = targetHeight();
         final int targetWidth = (int) Math.round(targetHeight / preferredImageRatio.getHeight() * preferredImageRatio.getWidth());
 
-        LOG.debug("Target image size: " + targetWidth + "x" + targetHeight);
+        final int maxWidth = projectFrame()
+                .map(JFrame::getWidth)
+                .map(w -> (int) Math.round(MAX_WIDTH_PERCENTAGE * w))
+                .orElse(targetWidth);
 
-        return new Dimension(targetWidth, targetHeight);
+        if (targetWidth > maxWidth) {
+            int heightMatchingMaxWidth = (int) Math.round(maxWidth / preferredImageRatio.getWidth() * preferredImageRatio.getHeight());
+            LOG.debug("Target image width is too big. Resizing to " + maxWidth + "x" + heightMatchingMaxWidth);
+            return new Dimension(maxWidth, heightMatchingMaxWidth);
+        } else {
+            LOG.debug("Target image size: " + targetWidth + "x" + targetHeight);
+            return new Dimension(targetWidth, targetHeight);
+        }
     }
 
     private int targetHeight() {
-        final JFrame projectFrame = WindowManager.getInstance().getFrame(project);
-        if (projectFrame == null) {
+        final var projectFrame = projectFrame();
+        if (projectFrame.isEmpty()) {
             LOG.warn("Could not get project frame for project " + project.getName() + ". Using default height.");
             return DEFAULT_HEIGHT;
         }
-        LOG.info("Project frame size: " + projectFrame.getWidth() + "x" + projectFrame.getHeight());
-        int partialHeight = (int) Math.round(projectFrame.getHeight() * TARGET_HEIGHT_PERCENTAGE);
+        LOG.info("Project frame size: " + projectFrame.get().getWidth() + "x" + projectFrame.get().getHeight());
+        int partialHeight = (int) Math.round(projectFrame.get().getHeight() * TARGET_HEIGHT_PERCENTAGE);
         int resultingHeight = Math.max(partialHeight, MIN_HEIGHT);
         LOG.info("Background image height: " + resultingHeight);
         return resultingHeight;
+    }
+
+    private Optional<JFrame> projectFrame() {
+        return Optional.ofNullable(WindowManager.getInstance().getFrame(project));
     }
 }
