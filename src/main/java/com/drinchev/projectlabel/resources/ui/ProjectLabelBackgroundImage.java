@@ -8,12 +8,15 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.Service.Level;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
-import com.intellij.ui.scale.JBUIScale;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +27,12 @@ import static java.util.Objects.requireNonNull;
 
 @Service(Level.PROJECT)
 public class ProjectLabelBackgroundImage {
+
+    public static final int MIN_HEIGHT = 30;
+
+    public static final int DEFAULT_HEIGHT = 100;
+
+    public static final double TARGET_HEIGHT_PERCENTAGE = 0.07;
 
     private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
@@ -38,6 +47,18 @@ public class ProjectLabelBackgroundImage {
     public ProjectLabelBackgroundImage(@NotNull Project project) {
         this.project = requireNonNull(project);
         this.preferences = new PreferencesReader(project, ProjectPreferences.getInstance(project), ApplicationPreferences.getInstance());
+
+        var window = WindowManager.getInstance().getFrame(project);
+        if (window == null) {
+            LOG.error("Could not get window for project " + project.getName());
+        } else {
+            window.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    updateImage();
+                }
+            });
+        }
     }
 
     public void showImage() {
@@ -61,8 +82,8 @@ public class ProjectLabelBackgroundImage {
         prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp);
         String prev_frame = prop.getValue(IdeBackgroundUtil.FRAME_PROP);
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, imageProp);
-        LOG.warn("Previous editor image: " + prev_editor);
-        LOG.warn("Previous frame image: " + prev_frame);
+        LOG.debug("Previous editor image: " + prev_editor);
+        LOG.debug("Previous frame image: " + prev_frame);
     }
 
     private PropertiesComponent projectLevelPropertiesComponent() {
@@ -93,15 +114,8 @@ public class ProjectLabelBackgroundImage {
         if (bufferedImage == null) {
             try {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
-                Dimension preferredImageRation = renderer.getPreferredImageRatio();
-                final int paddingX = JBUIScale.scale(100);
-                final int paddingY = JBUIScale.scale(100);
-                // we want to have a 800x600 image, but prefer it to have the same ratio as the project label, so we scale it accordingly
-                final int targetWidth = 800;
-                final int targetHeight = (int) Math.round(targetWidth / preferredImageRation.getWidth() * preferredImageRation.getHeight());
-                bufferedImage = renderer.renderLabel(
-                        new Dimension(targetWidth+2*paddingX, targetHeight+2*paddingY),
-                        new Dimension(paddingX, paddingY));
+                Dimension preferredImageDimension = getPreferredImageDimension();
+                bufferedImage = renderer.renderLabel(preferredImageDimension);
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();
@@ -113,4 +127,29 @@ public class ProjectLabelBackgroundImage {
         }
     }
 
+    private Dimension getPreferredImageDimension() {
+        ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
+        Dimension preferredImageRatio = renderer.getPreferredImageRatio();
+        LOG.debug("Preferred image ratio: " + preferredImageRatio);
+
+        final int targetHeight = targetHeight();
+        final int targetWidth = (int) Math.round(targetHeight / preferredImageRatio.getHeight() * preferredImageRatio.getWidth());
+
+        LOG.debug("Target image size: " + targetWidth + "x" + targetHeight);
+
+        return new Dimension(targetWidth, targetHeight);
+    }
+
+    private int targetHeight() {
+        final JFrame projectFrame = WindowManager.getInstance().getFrame(project);
+        if (projectFrame == null) {
+            LOG.warn("Could not get project frame for project " + project.getName() + ". Using default height.");
+            return DEFAULT_HEIGHT;
+        }
+        LOG.info("Project frame size: " + projectFrame.getWidth() + "x" + projectFrame.getHeight());
+        int partialHeight = (int) Math.round(projectFrame.getHeight() * TARGET_HEIGHT_PERCENTAGE);
+        int resultingHeight = Math.max(partialHeight, MIN_HEIGHT);
+        LOG.info("Background image height: " + resultingHeight);
+        return resultingHeight;
+    }
 }

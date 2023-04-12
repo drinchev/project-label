@@ -2,6 +2,7 @@ package com.drinchev.projectlabel.resources.ui;
 
 import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.utils.UtilsFont;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,8 @@ import static java.util.Objects.requireNonNull;
 
 public class ProjectLabelAWTRenderer {
 
+    private final static Logger LOG = Logger.getInstance(ProjectLabelAWTRenderer.class);
+
     public static final RenderingHints RENDERING_HINTS = new RenderingHints(
             ofEntries(
                     entry(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY),
@@ -27,7 +30,7 @@ public class ProjectLabelAWTRenderer {
             )
     );
 
-    public static final int HORIZONTAL_PADDING = 18;
+    public static final int HORIZONTAL_PADDING = 12;
     public static final int VERTICAL_PADDING = 2;
 
     private final PreferencesReader preferences;
@@ -37,13 +40,7 @@ public class ProjectLabelAWTRenderer {
         this.preferences = requireNonNull(preferences);
     }
 
-
     public BufferedImage renderLabel(Dimension targetArea) {
-        return renderLabel(targetArea, new Dimension(0, 0));
-    }
-
-    public BufferedImage renderLabel(Dimension targetArea, Dimension border) {
-
         BufferedImage bufferedImage = ImageUtil.createImage(targetArea.width, targetArea.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
@@ -51,7 +48,7 @@ public class ProjectLabelAWTRenderer {
 
         final String label = preferences.label();
 
-        double zoomFactor = calculateZoomFactor(label, targetArea, border);
+        double zoomFactor = calculateZoomFactor(label, targetArea);
 
         final Font font = getFont(zoomFactor);
 
@@ -90,17 +87,13 @@ public class ProjectLabelAWTRenderer {
         return bufferedImage;
     }
 
-    private double calculateZoomFactor(String label, Dimension targetArea, Dimension border) {
-       int targetHeight = targetArea.height - 2*border.height;
-       int targetWidth = targetArea.width - 2*border.width;
-
+    private double calculateZoomFactor(String label, Dimension targetArea) {
        Font defaultFont = getFont(1.0);
 
        Dimension stringBounds = getStringBounds(defaultFont, label);
-       double zoomFactorX = targetWidth / stringBounds.getWidth();
-       double zoomFactorY = targetHeight / stringBounds.getHeight();
-
-         return Math.min(zoomFactorX, zoomFactorY);
+       double zoomFactorX = targetArea.width / stringBounds.getWidth();
+       double zoomFactorY = targetArea.height / stringBounds.getHeight();
+       return Math.min(zoomFactorX, zoomFactorY);
     }
 
     private Dimension getStringBounds(Font font, String label) {
@@ -110,28 +103,15 @@ public class ProjectLabelAWTRenderer {
 
     public Dimension getPreferredImageRatio() {
         Dimension stringBounds = getStringBounds(getFont(1.0), preferences.label());
-
-        // optimize fractions
-        int a = stringBounds.width;
-        int b = stringBounds.height;
-        int h;
-        while(b != 0){
-            h = a%b;
-            a = b;
-            b = h;
-        }
-        // now a
-        return new Dimension(stringBounds.width/a, stringBounds.height/a);
+        return stringBounds;
     }
 
-
-
     private int getHorizontalPadding(Double zoomFactor) {
-        return (int) Math.round(HORIZONTAL_PADDING * zoomFactor);
+        return (int) Math.round(HORIZONTAL_PADDING * Math.min(zoomFactor, 3.0));
     }
 
     private int getVerticalPadding(double zoomFactor) {
-        return (int) Math.round(VERTICAL_PADDING * zoomFactor);
+        return (int) Math.round(VERTICAL_PADDING * Math.min(zoomFactor, 3.0));
     }
 
     private Font getFont(Double zoomFactor) {

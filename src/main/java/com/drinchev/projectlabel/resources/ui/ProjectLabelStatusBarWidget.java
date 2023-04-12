@@ -26,8 +26,8 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     @NonNls
     public static final String WIDGET_ID = "ProjectLabelWidget";
 
-    private static final int HORIZONTAL_PADDING = 18;
-    private static final int VERTICAL_PADDING = 2;
+    private static final int HORIZONTAL_PADDING = ProjectLabelAWTRenderer.HORIZONTAL_PADDING;
+    private static final int VERTICAL_PADDING = ProjectLabelAWTRenderer.VERTICAL_PADDING;
     private static final int VERTICAL_MARGIN = UtilsUI.isNewUI() ? 5 : 3;
     private static final int HEIGHT = 12;
 
@@ -99,6 +99,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
         if (bufferedImage == null) {
             Dimension size = getSize();
+            LOG.debug("Status Bar Widget Size: " + size.width + "x" + size.height);
             int height = size.height - (2 * VERTICAL_MARGIN);
             ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
             bufferedImage = renderer.renderLabel(new Dimension(size.width, height));
