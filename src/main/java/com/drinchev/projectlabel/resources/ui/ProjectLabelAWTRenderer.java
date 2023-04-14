@@ -88,17 +88,27 @@ public class ProjectLabelAWTRenderer {
     }
 
     private double calculateZoomFactor(String label, Dimension targetArea) {
-       Font defaultFont = getFont(1.0);
-
-       Dimension stringBounds = getStringBounds(defaultFont, label);
-       double zoomFactorX = targetArea.width / stringBounds.getWidth();
-       double zoomFactorY = targetArea.height / stringBounds.getHeight();
+       Dimension defaultLabelBounds = getLabelBounds(1.0);
+       double zoomFactorX = targetArea.width / defaultLabelBounds.getWidth();
+       double zoomFactorY = targetArea.height / defaultLabelBounds.getHeight();
        return Math.min(zoomFactorX, zoomFactorY);
     }
 
     private Dimension getStringBounds(Font font, String label) {
-        Dimension stringBounds = getTextDimensions(font, label);
-        return new Dimension((int)Math.round(stringBounds.getWidth() + 2 * HORIZONTAL_PADDING), (int) Math.round(stringBounds.getHeight() + 2 * VERTICAL_PADDING));
+        return getTextDimensions(font, label);
+    }
+
+    public Dimension getLabelBounds(double zoomFactor) {
+        final Font font = getFont(zoomFactor);
+        final String label = preferences.label();
+
+        var textDimensions = getTextDimensions(font, label);
+
+        return new Dimension(
+                textDimensions.width + (2 * getHorizontalPadding(zoomFactor)),
+                textDimensions.height + (2 * getVerticalPadding(zoomFactor))
+        );
+
     }
 
     public Dimension getPreferredImageRatio() {
