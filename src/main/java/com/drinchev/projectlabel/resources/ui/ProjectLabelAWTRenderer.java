@@ -3,6 +3,7 @@ package com.drinchev.projectlabel.resources.ui;
 import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.ui.JBColor;
 import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,14 +49,13 @@ public class ProjectLabelAWTRenderer {
         Graphics2D origGraphics = source.createGraphics();
         GraphicsConfiguration gfxConfig = origGraphics.getDeviceConfiguration();
         BufferedImage bufferedImage = gfxConfig.createCompatibleImage(targetArea.width, targetArea.height, source.getTransparency());
-
         origGraphics.dispose();
+
         Graphics2D g2d = bufferedImage.createGraphics();
 
         g2d.drawImage(source, border.left, border.top, null);
 
-        g2d.setColor(Color.RED);
-        g2d.drawRect(0, 0, targetArea.width , targetArea.height );
+        ProjectLabelAWTDebugRenderer.drawDebugRect(g2d, 0, 0, targetArea.width, targetArea.height, JBColor.cyan);
 
         g2d.dispose();
 
@@ -80,12 +80,9 @@ public class ProjectLabelAWTRenderer {
         int labelWidth = getTextDimensions(font, preferences.label()).width;
 
         // debug
+        ProjectLabelAWTDebugRenderer.drawDebugRect(graphics, margins.width, margins.height, width, height, JBColor.red);
+        ProjectLabelAWTDebugRenderer.drawDebugRect(graphics, 0, 0, size.width, size.height, JBColor.green);
 
-        graphics.setColor(Color.RED);
-        graphics.drawRect(margins.width, margins.height, width , height );
-
-        graphics.setColor(Color.GREEN);
-        graphics.drawRect(0, 0, size.width , size.height );
         // background
         graphics.setColor(preferences.backgroundColor());
         graphics.fillRoundRect(0, 0,  width, height, arcs.width, arcs.height);
