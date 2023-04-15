@@ -8,12 +8,8 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.Service.Level;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
-import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
-import kotlinx.html.I;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -126,10 +122,9 @@ public class ProjectLabelBackgroundImage {
             try {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
                 Dimension preferredImageDimension = getPreferredImageDimension();
-                BufferedImage rawLabelImage = renderer.renderLabel2(preferredImageDimension, new Dimension(0, 0));//preferredImageDimension);
+                BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));//preferredImageDimension);
                 LOG.warn("border: " + BORDER_X + ", " + BORDER_Y + ")");
-                bufferedImage = renderer.renderIntoImage(rawLabelImage, new Insets(BORDER_Y, BORDER_X, BORDER_Y, BORDER_X));
-//                bufferedImage = rawLabelImage;
+                bufferedImage = ProjectLabelAWTRenderer.renderImageWithInsets(rawLabelImage, new Insets(BORDER_Y, BORDER_X, BORDER_Y, BORDER_X));
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();

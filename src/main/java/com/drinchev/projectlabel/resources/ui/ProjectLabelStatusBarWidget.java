@@ -96,15 +96,12 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
 
     @Override
     public void paintComponent(final Graphics graphics) {
-
         if (bufferedImage == null) {
             Dimension size = getSize();
             LOG.debug("Status Bar Widget Size: " + size.width + "x" + size.height);
-            int height = size.height - (2 * VERTICAL_MARGIN);
             ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
-            bufferedImage = renderer.renderLabel2(size, new Dimension(0, VERTICAL_MARGIN));
+            bufferedImage = renderer.renderLabelAsImage(size, new Dimension(0, VERTICAL_MARGIN));
         }
-
         UIUtil.drawImage(graphics, bufferedImage, 0, VERTICAL_MARGIN, null);
     }
 
