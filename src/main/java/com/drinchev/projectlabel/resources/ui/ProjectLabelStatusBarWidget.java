@@ -102,7 +102,7 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
             LOG.debug("Status Bar Widget Size: " + size.width + "x" + size.height);
             int height = size.height - (2 * VERTICAL_MARGIN);
             ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
-            bufferedImage = renderer.renderLabel(new Dimension(size.width, height));
+            bufferedImage = renderer.renderLabel2(size, new Dimension(0, VERTICAL_MARGIN));
         }
 
         UIUtil.drawImage(graphics, bufferedImage, 0, VERTICAL_MARGIN, null);

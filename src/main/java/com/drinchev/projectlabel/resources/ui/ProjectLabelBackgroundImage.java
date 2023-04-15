@@ -8,8 +8,12 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.Service.Level;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
+import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
+import kotlinx.html.I;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -35,7 +39,11 @@ public class ProjectLabelBackgroundImage {
 
     public static final double TARGET_HEIGHT_PERCENTAGE = 0.07;
 
-    public static final double MAX_WIDTH_PERCENTAGE = 0.45;
+    public static final double MAX_WIDTH_PERCENTAGE = 0.40;
+
+    public static final int BORDER_X = 80;
+
+    public static final int BORDER_Y = 80;
 
     private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
@@ -118,11 +126,15 @@ public class ProjectLabelBackgroundImage {
             try {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
                 Dimension preferredImageDimension = getPreferredImageDimension();
-                bufferedImage = renderer.renderLabel(preferredImageDimension);
+                BufferedImage rawLabelImage = renderer.renderLabel2(preferredImageDimension, new Dimension(0, 0));//preferredImageDimension);
+                LOG.warn("border: " + BORDER_X + ", " + BORDER_Y + ")");
+                bufferedImage = renderer.renderIntoImage(rawLabelImage, new Insets(BORDER_Y, BORDER_X, BORDER_Y, BORDER_X));
+//                bufferedImage = rawLabelImage;
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();
                 ImageIO.write(bufferedImage, "png", filePath.toFile());
+//                Runtime.getRuntime().exec("open " + filePath.toFile().getAbsolutePath());
                 resultingImage = filePath.toFile().getAbsolutePath();
             } catch (IOException e) {
                 LOG.error("Exception while creating project label background image", e);
@@ -132,7 +144,7 @@ public class ProjectLabelBackgroundImage {
 
     private Dimension getPreferredImageDimension() {
         ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
-        Dimension preferredImageRatio = renderer.getLabelBounds(1.0);
+        Dimension preferredImageRatio = renderer.getPreferredSize2();//renderer.getLabelBounds(5.0);
         LOG.debug("Preferred image ratio: " + preferredImageRatio);
 
         final int targetHeight = targetHeight();
