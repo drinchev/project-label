@@ -47,6 +47,9 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
     @OptionTag
     private int backgroundImageOpacity = 15;
 
+    @OptionTag
+    private boolean backgroundImageInherited = true;
+
     public static ProjectPreferences getInstance(Project project) {
         return project.getService(ProjectPreferences.class);
     }
@@ -106,11 +109,14 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
         this.fontName = font.isEmpty() ? null : font;
     }
 
-    public void setBackgroundImagePosition(@NotNull BackgroundImagePosition backgroundImagePosition) {
-        this.backgroundImagePosition = requireNonNull(backgroundImagePosition).name();
+    public void setBackgroundImagePosition(BackgroundImagePosition backgroundImagePosition) {
+        this.backgroundImagePosition = backgroundImagePosition != null ? backgroundImagePosition.name() : null;
     }
 
     public BackgroundImagePosition getBackgroundImagePosition() {
+        if (this.backgroundImagePosition == null) {
+            return null;
+        }
         return BackgroundImagePosition.valueOf(this.backgroundImagePosition);
     }
 
@@ -120,5 +126,13 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
 
     public void setBackgroundImageOpacity(int backgroundImageOpacity) {
         this.backgroundImageOpacity = backgroundImageOpacity;
+    }
+
+    public boolean isBackgroundImageInherited() {
+        return backgroundImageInherited;
+    }
+
+    public void setBackgroundImageInherited(boolean backgroundImageInherited) {
+        this.backgroundImageInherited = backgroundImageInherited;
     }
 }

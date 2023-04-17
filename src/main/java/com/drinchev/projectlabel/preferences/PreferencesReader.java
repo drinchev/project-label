@@ -44,11 +44,11 @@ public class PreferencesReader {
     }
 
     public BackgroundImagePosition backgroundImagePosition() {
-        return projectPrefs.getBackgroundImagePosition();
+        return projectPrefs.isBackgroundImageInherited() ? appPrefs.getBackgroundImagePosition() : projectPrefs.getBackgroundImagePosition();
     }
 
     public int backgroundImageOpacity() {
-        return projectPrefs.getBackgroundImageOpacity();
+        return projectPrefs.isBackgroundImageInherited() ? appPrefs.getBackgroundImageOpacity() : projectPrefs.getBackgroundImageOpacity();
     }
 
 
