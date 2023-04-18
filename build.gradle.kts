@@ -1,3 +1,4 @@
+import com.diffplug.spotless.LineEnding
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 
@@ -35,11 +36,17 @@ changelog {
     repositoryUrl.set(properties("pluginRepositoryUrl"))
 }
 
+// Configure code style -- apply with `./gradlew spotlessApply`, check with `./gradlew spotlessCheck`
 spotless {
+
+    lineEndings = LineEnding.UNIX
+    encoding = Charsets.UTF_8
+
     java {
         importOrder()
         removeUnusedImports()
         palantirJavaFormat()
+        endWithNewline()
     }
 }
 
