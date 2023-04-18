@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Added
+- Option to display the project label as a background image in the IDE's main window
+
+### Changed
+- Optimize Preferences UI
+
 ## [1.1.1] - 2023-04-07
 
 ### Fixed
