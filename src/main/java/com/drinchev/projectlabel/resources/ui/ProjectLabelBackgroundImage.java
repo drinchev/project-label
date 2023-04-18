@@ -38,9 +38,13 @@ public class ProjectLabelBackgroundImage {
 
     public static final double MAX_WIDTH_PERCENTAGE = 0.40;
 
-    public static final int BORDER_X = 80;
+    public static final int BORDER_X_PADDING = 50;
 
-    public static final int BORDER_Y = 80;
+    public static final int BORDER_X_MARGIN = 39;
+
+    public static final int BORDER_Y_PADDING = 50;
+
+    public static final int BORDER_Y_MARGIN = 28;
 
     private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
@@ -123,8 +127,14 @@ public class ProjectLabelBackgroundImage {
             try {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
                 Dimension preferredImageDimension = getPreferredImageDimension();
-                BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));//preferredImageDimension);
-                bufferedImage = ProjectLabelAWTRenderer.renderImageWithInsets(rawLabelImage, JBUI.insets(BORDER_Y, BORDER_X, BORDER_Y, BORDER_X));
+                BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));
+
+                @SuppressWarnings("UseDPIAwareInsets")
+                final Insets insets = new Insets(JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
+                        JBUI.scale(BORDER_X_MARGIN) + BORDER_X_PADDING,
+                        JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
+                        JBUI.scale(BORDER_X_MARGIN) + BORDER_X_PADDING);
+                bufferedImage = ProjectLabelAWTRenderer.renderImageWithInsets(rawLabelImage, insets);
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();
