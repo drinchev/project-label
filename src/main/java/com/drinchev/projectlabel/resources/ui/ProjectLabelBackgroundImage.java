@@ -10,6 +10,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -123,7 +124,7 @@ public class ProjectLabelBackgroundImage {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
                 Dimension preferredImageDimension = getPreferredImageDimension();
                 BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));//preferredImageDimension);
-                bufferedImage = ProjectLabelAWTRenderer.renderImageWithInsets(rawLabelImage, new Insets(BORDER_Y, BORDER_X, BORDER_Y, BORDER_X));
+                bufferedImage = ProjectLabelAWTRenderer.renderImageWithInsets(rawLabelImage, JBUI.insets(BORDER_Y, BORDER_X, BORDER_Y, BORDER_X));
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();
