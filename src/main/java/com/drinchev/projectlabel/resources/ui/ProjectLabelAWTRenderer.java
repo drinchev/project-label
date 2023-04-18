@@ -115,7 +115,6 @@ public class ProjectLabelAWTRenderer {
         Dimension preferredSize = getPreferredSize2();
         double zoomFactorX = targetArea.width / preferredSize.getWidth();
         double zoomFactorY = targetArea.height / preferredSize.getHeight();
-        LOG.warn("zoomFactorX: " + zoomFactorX + " zoomFactorY: " + zoomFactorY);
         return Math.min(zoomFactorX, zoomFactorY);
     }
 

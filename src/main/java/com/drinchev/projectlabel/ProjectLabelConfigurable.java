@@ -74,8 +74,6 @@ public class ProjectLabelConfigurable implements Configurable {
     }
 
     public boolean isModified() {
-        LOG.warn("projPrefs: " + BackgroundImagePrefs.from(projectPreferences.isBackgroundImageInherited(), projectPreferences.getBackgroundImageOpacity(), projectPreferences.getBackgroundImagePosition()) + "\n" + preferencesPanel.getBackgroundImagePrefs());
-        LOG.warn("appPrefs: " + BackgroundImagePrefs.from(applicationPreferences.getBackgroundImageOpacity(), applicationPreferences.getBackgroundImagePosition()) + "\n" + preferencesPanel.getGlobalBackgroundImagePrefs());
         return !UtilsColor.isEqual(projectPreferences.getBackgroundColor(), preferencesPanel.getBackgroundColor()) ||
                 !UtilsColor.isEqual(projectPreferences.getTextColor(), preferencesPanel.getTextColor()) ||
                 projectPreferences.getFontSize() != preferencesPanel.getFontSize() ||
@@ -101,17 +99,14 @@ public class ProjectLabelConfigurable implements Configurable {
             projectPreferences.setLabel(preferencesPanel.getLabel());
             BackgroundImagePrefs projBackgroundImagePrefs = preferencesPanel.getBackgroundImagePrefs();
             if (projBackgroundImagePrefs == null) {
-                LOG.warn("PROJ Background image prefs are null");
                 projectPreferences.setBackgroundImageInherited(true);
                 projectPreferences.setBackgroundImagePosition(BackgroundImagePosition.HIDDEN);
                 projectPreferences.setBackgroundImageOpacity(-1);
             } else {
-                LOG.warn("PROJ Background image prefs are NOT null");
                 projectPreferences.setBackgroundImageInherited(false);
                 projectPreferences.setBackgroundImagePosition(projBackgroundImagePrefs.position());
                 projectPreferences.setBackgroundImageOpacity(projBackgroundImagePrefs.opacity());
             }
-            LOG.warn("App prefs: " + applicationPreferences.getBackgroundImagePosition() + " " + applicationPreferences.getBackgroundImageOpacity());
             BackgroundImagePrefs appBackgroundImagePrefs = preferencesPanel.getGlobalBackgroundImagePrefs();
             applicationPreferences.setBackgroundImagePosition(appBackgroundImagePrefs.position());
             applicationPreferences.setBackgroundImageOpacity(appBackgroundImagePrefs.opacity());

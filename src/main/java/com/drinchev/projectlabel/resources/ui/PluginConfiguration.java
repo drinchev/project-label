@@ -232,7 +232,6 @@ public class PluginConfiguration {
     // backgroundImage
 
     public void setBackgroundImagePrefs(BackgroundImagePrefs projPrefs, @NotNull BackgroundImagePrefs globalPrefs) {
-        LOG.warn("settingBackgroundImagePrefs " + projPrefs + " " + globalPrefs);
         Objects.requireNonNull(globalPrefs);
         if (globalPrefs.position() == BackgroundImagePosition.HIDDEN) {
             editorImageEnabledCheckboxGlobal.setSelected(false);

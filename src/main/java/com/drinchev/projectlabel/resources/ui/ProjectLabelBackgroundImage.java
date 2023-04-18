@@ -123,13 +123,11 @@ public class ProjectLabelBackgroundImage {
                 ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
                 Dimension preferredImageDimension = getPreferredImageDimension();
                 BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));//preferredImageDimension);
-                LOG.warn("border: " + BORDER_X + ", " + BORDER_Y + ")");
                 bufferedImage = ProjectLabelAWTRenderer.renderImageWithInsets(rawLabelImage, new Insets(BORDER_Y, BORDER_X, BORDER_Y, BORDER_X));
 
                 Path filePath = Files.createTempFile("project-label", ".png");
                 filePath.toFile().deleteOnExit();
                 ImageIO.write(bufferedImage, "png", filePath.toFile());
-//                Runtime.getRuntime().exec("open " + filePath.toFile().getAbsolutePath());
                 resultingImage = filePath.toFile().getAbsolutePath();
             } catch (IOException e) {
                 LOG.error("Exception while creating project label background image", e);
