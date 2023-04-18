@@ -60,6 +60,15 @@ public class PluginConfiguration {
         put(BackgroundImagePosition.BOTTOM_LEFT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_left.svg"));
     }});
 
+    private final static Map<BackgroundImagePosition, Icon> DISABLED_LABEL_POSITIONS = Collections.unmodifiableMap(new LinkedHashMap<>() {{ // linked hash map to preserve order
+        put(BackgroundImagePosition.CENTER, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.CENTER)));
+        put(BackgroundImagePosition.TOP_LEFT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_LEFT)));
+        put(BackgroundImagePosition.TOP_RIGHT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_RIGHT)));
+        put(BackgroundImagePosition.BOTTOM_RIGHT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_RIGHT)));
+        put(BackgroundImagePosition.BOTTOM_LEFT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_LEFT)));
+    }});
+
+
     /**
      * Constructor
      */
@@ -94,7 +103,7 @@ public class PluginConfiguration {
 
         Stream.of(this.editorImagePositionComboBox, this.editorImagePositionComboBoxGlobal)
                 .forEach(comboBox -> {
-                    comboBox.setRenderer(new LabelWithIconRenderer());
+                    comboBox.setRenderer(new LabelWithIconRenderer(comboBox));
                     comboBox.setModel(new DefaultComboBoxModel<>(LABEL_POSITIONS.keySet().stream().map(BackgroundImagePosition::displayName).toArray(String[]::new)));
                 });
 
@@ -272,21 +281,25 @@ public class PluginConfiguration {
     }
 
     private static class LabelWithIconRenderer extends DefaultListCellRenderer {
+
+        private final JComboBox<String> comboBox;
+
+        public LabelWithIconRenderer(@NotNull JComboBox<String> comboBox) {
+            this.comboBox = Objects.requireNonNull(comboBox);
+        }
+
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
             String positionDisplayName = (String) value;
             BackgroundImagePosition position = BackgroundImagePosition.findByDisplayName(positionDisplayName);
-            label.setIcon(LABEL_POSITIONS.get(position));
-            label.setDisabledIcon(LABEL_POSITIONS.get(position));
+            if (comboBox.isEnabled()) {
+                label.setIcon(LABEL_POSITIONS.get(position));
+            } else {
+                label.setIcon(DISABLED_LABEL_POSITIONS.get(position));
+            }
             return label;
         }
-
-        public void setEnabled(boolean enabled) {
-            super.setEnabled(enabled);
-        }
-
-
     }
 }

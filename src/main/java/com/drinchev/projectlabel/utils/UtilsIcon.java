@@ -13,4 +13,8 @@ public final class UtilsIcon {
         return IconLoader.getIcon(path, UtilsIcon.class);
     }
 
+    public static Icon disabledIcon(Icon icon) {
+        return IconLoader.getDisabledIcon(icon);
+    }
+
 }
