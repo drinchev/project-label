@@ -43,7 +43,7 @@
               </grid>
             </constraints>
             <properties>
-              <toolTipText value="Global Project Label Font Family"/>
+              <toolTipText value="Font family for the project label"/>
             </properties>
           </component>
           <component id="4574c" class="javax.swing.JSpinner" binding="spinnerGlobalFontSize">
@@ -55,7 +55,7 @@
               </grid>
             </constraints>
             <properties>
-              <toolTipText value="Global Project Label Font Size"/>
+              <toolTipText value="Configure the font size that should be used for project labels by default"/>
             </properties>
           </component>
           <component id="f450" class="javax.swing.JLabel">
@@ -100,7 +100,9 @@
                 <maximum-size width="240" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="Default position of the background image"/>
+            </properties>
           </component>
           <component id="1d591" class="javax.swing.JSpinner" binding="editorImageBackgroundOpacityGlobal">
             <constraints>
@@ -110,7 +112,9 @@
                 <maximum-size width="100" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="Default opacity of the background image in %."/>
+            </properties>
           </component>
           <component id="3dd98" class="javax.swing.JCheckBox" binding="editorImageEnabledCheckboxGlobal">
             <constraints>
@@ -118,6 +122,7 @@
             </constraints>
             <properties>
               <text value="Enabled"/>
+              <toolTipText value="Show the project label as a background image of the main window"/>
             </properties>
           </component>
         </children>
@@ -165,7 +170,9 @@
                 <maximum-size width="240" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="Font family for the project label in the current project"/>
+            </properties>
           </component>
           <component id="ab168" class="javax.swing.JCheckBox" binding="checkBoxInheritFont">
             <constraints>
@@ -173,6 +180,7 @@
             </constraints>
             <properties>
               <text value="Inherit"/>
+              <toolTipText value="use label font settings from global preferences"/>
             </properties>
           </component>
           <component id="f3bfa" class="javax.swing.JSpinner" binding="spinnerFontSize">
@@ -183,7 +191,9 @@
                 <maximum-size width="100" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="Font size for the project label in the current project"/>
+            </properties>
           </component>
           <component id="e32bb" class="javax.swing.JLabel">
             <constraints>
@@ -219,7 +229,9 @@
                 <maximum-size width="100" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="background color of the project label"/>
+            </properties>
           </component>
           <grid id="94b5f" binding="panelBackgroundColor" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
@@ -262,7 +274,9 @@
                 <maximum-size width="100" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="text color of the project label"/>
+            </properties>
           </component>
           <grid id="84504" binding="panelTextColor" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
@@ -295,7 +309,9 @@
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <toolTipText value="Text to display in the project label. If empty: the project name is shown."/>
+        </properties>
       </component>
       <component id="e243c" class="javax.swing.JLabel" binding="editorBackgroundOpacityLabel">
         <constraints>
@@ -340,7 +356,9 @@
                 <maximum-size width="240" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <toolTipText value="Position of the background image"/>
+            </properties>
           </component>
           <component id="37340" class="javax.swing.JCheckBox" binding="editorImageEnabledCheckbox">
             <constraints>
@@ -348,6 +366,7 @@
             </constraints>
             <properties>
               <text value="Enabled"/>
+              <toolTipText value="Show the project label as a background image of the main window in the current project"/>
             </properties>
           </component>
           <component id="9cc5c" class="javax.swing.JCheckBox" binding="editorImageInheritCheckbox">
@@ -356,6 +375,7 @@
             </constraints>
             <properties>
               <text value="Inherit"/>
+              <toolTipText value="use background image settings from global preferences"/>
             </properties>
           </component>
         </children>
