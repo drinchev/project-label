@@ -4,10 +4,14 @@ import com.drinchev.projectlabel.preferences.BackgroundImagePrefs;
 import com.drinchev.projectlabel.utils.UtilsIcon;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.FontComboBox;
+import com.intellij.ui.TitledSeparator;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,6 +43,8 @@ public class PluginConfiguration {
     private JSpinner editorImageBackgroundOpacityGlobal;
     private JCheckBox editorImageEnabledCheckboxGlobal;
     private JCheckBox editorImageInheritCheckbox;
+    private TitledSeparator globalPreferencesSectionTitle;
+    private TitledSeparator projectPreferencesSectionTitle;
     private final SpinnerNumberModel editorImageBackgroundOpacityModel;
     private final SpinnerNumberModel editorImageBackgroundOpacityModelGlobal;
     private ColorField colorFieldTextColor;
@@ -93,6 +99,23 @@ public class PluginConfiguration {
                 });
 
         editorImageInheritCheckbox.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
+
+        rootPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateSectionTitleWidths();
+            }
+
+            private void updateSectionTitleWidths() {
+                Insets insets = rootPanel.getInsets();
+                Border border = rootPanel.getBorder();
+                Insets borderInsets = border.getBorderInsets(rootPanel);
+                Dimension preferredSize = new Dimension(rootPanel.getWidth() - (insets.left + insets.right + borderInsets.left + borderInsets.right), -1);
+
+                globalPreferencesSectionTitle.setPreferredSize(preferredSize);
+                projectPreferencesSectionTitle.setPreferredSize(preferredSize);
+            }
+        });
     }
 
     private void updateBackgroundImageCheckboxDependingStatesAndValues(Object ignore) {
