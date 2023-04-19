@@ -69,6 +69,11 @@ public class ProjectLabelBackgroundImage {
                 public void componentResized(ComponentEvent e) {
                     updateImage();
                 }
+
+                @Override
+                public void componentMoved(ComponentEvent e) {
+                    updateImage();
+                }
             });
         }
     }
