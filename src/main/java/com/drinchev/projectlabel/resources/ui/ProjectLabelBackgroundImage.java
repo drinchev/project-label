@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -99,8 +100,10 @@ public class ProjectLabelBackgroundImage {
         prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp);
         String prev_frame = prop.getValue(IdeBackgroundUtil.FRAME_PROP);
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, imageProp);
-        LOG.debug("Previous editor image: " + prev_editor);
-        LOG.debug("Previous frame image: " + prev_frame);
+
+        if (isProjectLabelImage(prev_editor, prev_frame)) {
+            deleteBackgroundImageFromProp(prev_editor);
+        }
     }
 
     private PropertiesComponent projectLevelPropertiesComponent() {
@@ -117,15 +120,37 @@ public class ProjectLabelBackgroundImage {
 
     public void hideImage() {
         PropertiesComponent prop = projectLevelPropertiesComponent();
-        if (!prop.getValue(IdeBackgroundUtil.EDITOR_PROP, "").contains("project-label") && !prop.getValue(IdeBackgroundUtil.FRAME_PROP, "").contains("project-label")) {
-            LOG.info("Not touching background image since not a project label image.");
+        String editorProp = prop.getValue(IdeBackgroundUtil.EDITOR_PROP, "");
+        String frameProp = prop.getValue(IdeBackgroundUtil.FRAME_PROP, "");
+        if (!isProjectLabelImage(editorProp, frameProp)) {
+            LOG.debug("Not touching background image since not a project label image: " + editorProp + " " + frameProp);
             return;
         }
-        LOG.info("Hiding project label background image.");
+        LOG.debug("Hiding project label background image.");
+        deleteBackgroundImageFromProp(editorProp);
         prop.setValue(IdeBackgroundUtil.EDITOR_PROP, null);
         prop.setValue(IdeBackgroundUtil.FRAME_PROP, null);
     }
 
+    private void deleteBackgroundImageFromProp(String editorProp) {
+        try {
+            LOG.debug("Deleting project label background image: " + editorProp);
+            Path path = pathOf(editorProp);
+            if (Files.exists(path)) {
+                Files.delete(path);
+            }
+        } catch (IOException e) {
+            LOG.warn("Could not delete project label background image", e);
+        }
+    }
+
+    private boolean isProjectLabelImage(String editorProp, String frameProp) {
+        return Objects.equals(editorProp, frameProp) && editorProp != null && editorProp.contains("project-label");
+    }
+
+    private Path pathOf(String imageProp) {
+        return Path.of(imageProp.split(",")[0]);
+    }
 
     private void createImage() {
         if (bufferedImage == null) {
@@ -142,7 +167,6 @@ public class ProjectLabelBackgroundImage {
                 bufferedImage = ProjectLabelAWTRenderer.renderImageWithInsets(rawLabelImage, insets);
 
                 Path filePath = Files.createTempFile("project-label", ".png");
-                filePath.toFile().deleteOnExit();
                 ImageIO.write(bufferedImage, "png", filePath.toFile());
                 resultingImage = filePath.toFile().getAbsolutePath();
             } catch (IOException e) {

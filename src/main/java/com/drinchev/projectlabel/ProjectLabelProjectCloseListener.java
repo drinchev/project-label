@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class ProjectLabelProjectCloseListener implements ProjectManagerListener {
 
     @Override
-    public void projectClosing(@NotNull Project project) {
+    public void projectClosingBeforeSave(@NotNull Project project) {
         // when the project is closing, we remove the background image (since it is going to be deleted)
         ProjectLabelBackgroundImage backgroundImage = project.getService(ProjectLabelBackgroundImage.class);
         backgroundImage.hideImage();
