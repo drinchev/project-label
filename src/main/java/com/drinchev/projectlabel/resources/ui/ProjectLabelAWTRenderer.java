@@ -4,6 +4,7 @@ import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -120,7 +121,10 @@ public class ProjectLabelAWTRenderer {
 
     private Font getFont(Double zoomFactor) {
         Font font = preferences.font();
-        font = UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, zoomFactor.floatValue()*font.getSize());
+        float fontSize = preferences.fontSize();
+        float fontSizeUnscaled = zoomFactor.floatValue() * fontSize;
+        float fontSizeScaled = JBUIScale.scaleFontSize(fontSizeUnscaled);
+        font = UtilsFont.setAttributes(font, TextAttribute.WEIGHT_ULTRABOLD, fontSizeScaled);
         return font;
     }
 
