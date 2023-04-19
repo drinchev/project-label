@@ -148,7 +148,7 @@ public class ProjectLabelBackgroundImage {
 
     private Dimension getPreferredImageDimension() {
         ProjectLabelAWTRenderer renderer = new ProjectLabelAWTRenderer(preferences);
-        Dimension preferredImageRatio = renderer.getPreferredSize2();//renderer.getLabelBounds(5.0);
+        Dimension preferredImageRatio = renderer.getPreferredSize();
         LOG.debug("Preferred image ratio: " + preferredImageRatio);
 
         final int targetHeight = targetHeight();

@@ -105,7 +105,7 @@ public class ProjectLabelAWTRenderer {
         return new Dimension((int) Math.round(zoomFactor * dimension.getWidth()), (int) Math.round(zoomFactor * dimension.getHeight()));
     }
 
-    public Dimension getPreferredSize2() {
+    public Dimension getPreferredSize() {
         int width = getTextDimensions().width + (HORIZONTAL_PADDING * 2);
         int textHeight = getTextDimensions().height;
         int height = textHeight > HEIGHT ? textHeight + (VERTICAL_PADDING * 2) : HEIGHT;
@@ -113,7 +113,7 @@ public class ProjectLabelAWTRenderer {
     }
 
     private double calculateZoomFactor(String label, Dimension targetArea) {
-        Dimension preferredSize = getPreferredSize2();
+        Dimension preferredSize = getPreferredSize();
         double zoomFactorX = targetArea.width / preferredSize.getWidth();
         double zoomFactorY = targetArea.height / preferredSize.getHeight();
         return Math.min(zoomFactorX, zoomFactorY);
