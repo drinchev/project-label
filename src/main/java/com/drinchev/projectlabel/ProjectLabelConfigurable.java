@@ -97,6 +97,8 @@ public class ProjectLabelConfigurable implements Configurable {
             projectPreferences.setFontSize(preferencesPanel.getFontSize());
             projectPreferences.setFontName(preferencesPanel.getFontName());
             projectPreferences.setLabel(preferencesPanel.getLabel());
+            applicationPreferences.setFontSize(preferencesPanel.getGlobalFontSize());
+            applicationPreferences.setFontName(preferencesPanel.getGlobalFontName());
             BackgroundImagePrefs projBackgroundImagePrefs = preferencesPanel.getBackgroundImagePrefs();
             if (projBackgroundImagePrefs == null) {
                 projectPreferences.setBackgroundImageInherited(true);

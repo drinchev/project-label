@@ -89,7 +89,10 @@ public class PluginConfiguration {
         this.spinnerGlobalFontSizeModel = new SpinnerNumberModel(0, 0, 36, 1);
         this.spinnerGlobalFontSize.setModel(this.spinnerGlobalFontSizeModel);
 
-        checkBoxInheritFont.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
+        this.spinnerGlobalFontSizeModel.addChangeListener(this::updateFontCheckboxDependingStatesAndValues);
+        this.fontComboBoxGlobalFont.addActionListener(this::updateFontCheckboxDependingStatesAndValues);
+
+        checkBoxInheritFont.addActionListener(this::updateFontCheckboxDependingStatesAndValues);
 
         this.editorImageEnabledCheckbox.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
 
@@ -125,6 +128,24 @@ public class PluginConfiguration {
                 projectPreferencesSectionTitle.setPreferredSize(preferredSize);
             }
         });
+    }
+
+    private void updateFontCheckboxDependingStatesAndValues(Object ignore) {
+        final boolean inherited = this.checkBoxInheritFont.isSelected();
+        if (inherited) {
+            copyFontValuesFromGlobalToProject();
+        }
+        Stream.of(
+                this.spinnerFontSize,
+                this.fontComboBoxFont
+        ).forEach(component -> component.setEnabled(!inherited));
+    }
+
+    private void copyFontValuesFromGlobalToProject() {
+        if (this.checkBoxInheritFont.isSelected()) {
+            this.spinnerFontSizeModel.setValue(this.spinnerGlobalFontSizeModel.getValue());
+            this.fontComboBoxFont.setSelectedItem(this.fontComboBoxGlobalFont.getSelectedItem());
+        }
     }
 
     private void updateBackgroundImageCheckboxDependingStatesAndValues(Object ignore) {
