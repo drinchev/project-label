@@ -150,6 +150,7 @@ public class PluginConfiguration {
 
     private void updateBackgroundImageCheckboxDependingStatesAndValues(Object ignore) {
         // global
+        this.editorImageEnabledCheckboxGlobal.setEnabled(true);
         final boolean globallyEnabled = this.editorImageEnabledCheckboxGlobal.isSelected();
         Stream.of(
                 this.editorImagePositionComboBoxGlobal,
