@@ -144,7 +144,7 @@ public class PluginConfiguration {
     private void copyFontValuesFromGlobalToProject() {
         if (this.checkBoxInheritFont.isSelected()) {
             this.spinnerFontSizeModel.setValue(this.spinnerGlobalFontSizeModel.getValue());
-            this.fontComboBoxFont.setSelectedItem(this.fontComboBoxGlobalFont.getSelectedItem());
+            this.fontComboBoxFont.setFontName(this.fontComboBoxGlobalFont.getFontName());
         }
     }
 
@@ -178,6 +178,11 @@ public class PluginConfiguration {
         }
     }
 
+    public void initStates() {
+            updateFontCheckboxDependingStatesAndValues(null);
+            updateBackgroundImageCheckboxDependingStatesAndValues(null);
+    }
+
     public void setTextColor(Color color) {
         this.colorFieldTextColor.setColor(color);
     }
@@ -199,11 +204,10 @@ public class PluginConfiguration {
     }
 
     public void setFontSize(int fontSize) {
-        if (fontSize == -1) {
-            this.spinnerFontSizeModel.setValue(this.spinnerGlobalFontSizeModel.getValue());
-            this.spinnerFontSize.setEnabled(false);
-        } else {
+        if (fontSize > 0) {
             this.spinnerFontSizeModel.setValue(fontSize);
+        } else {
+            this.checkBoxInheritFont.setSelected(true);
         }
     }
 
@@ -216,12 +220,10 @@ public class PluginConfiguration {
     }
 
     public void setFontName(String font) {
-        if (font.isEmpty()) {
-            this.checkBoxInheritFont.setSelected(true);
-            this.fontComboBoxFont.setEnabled(false);
-            this.fontComboBoxFont.setFontName(this.fontComboBoxGlobalFont.getFontName());
-        } else {
+        if (!font.isEmpty()) {
             this.fontComboBoxFont.setFontName(font);
+        } else {
+            this.checkBoxInheritFont.setSelected(true);
         }
     }
 

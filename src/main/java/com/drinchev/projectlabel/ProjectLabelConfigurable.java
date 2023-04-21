@@ -47,7 +47,6 @@ public class ProjectLabelConfigurable implements Configurable {
     public JComponent createComponent() {
         if (null == preferencesPanel) {
             preferencesPanel = new PluginConfiguration();
-            reset();
         }
         return preferencesPanel.getRootPanel();
     }
@@ -71,6 +70,7 @@ public class ProjectLabelConfigurable implements Configurable {
                         applicationPreferences.getBackgroundImagePosition()
                 )
         );
+        preferencesPanel.initStates();
     }
 
     public boolean isModified() {
