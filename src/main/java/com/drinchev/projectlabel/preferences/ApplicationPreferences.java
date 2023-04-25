@@ -1,5 +1,6 @@
 package com.drinchev.projectlabel.preferences;
 
+import com.drinchev.projectlabel.resources.ui.BackgroundImagePosition;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Objects;
 
 @State(
         name = "ProjectLabelApplicationPreferences",
@@ -25,6 +27,12 @@ public class ApplicationPreferences implements PersistentStateComponent<Applicat
 
     @OptionTag
     private String fontName = UtilsFont.getStatusBarItemFont().getFontName();
+
+    @OptionTag
+    private String backgroundImagePosition = BackgroundImagePosition.HIDDEN.name();
+
+    @OptionTag
+    private int backgroundImageOpacity = 15;
 
     public static ApplicationPreferences getInstance() {
         return ApplicationManager.getApplication().getService(ApplicationPreferences.class);
@@ -59,6 +67,22 @@ public class ApplicationPreferences implements PersistentStateComponent<Applicat
 
     public Font getFont() {
         return UtilsFont.getFontByName(fontName);
+    }
+
+    public void setBackgroundImagePosition(@NotNull BackgroundImagePosition backgroundImagePosition) {
+        this.backgroundImagePosition = Objects.requireNonNull(backgroundImagePosition).name();
+    }
+
+    public BackgroundImagePosition getBackgroundImagePosition() {
+        return BackgroundImagePosition.valueOf(this.backgroundImagePosition);
+    }
+
+    public int getBackgroundImageOpacity() {
+        return backgroundImageOpacity;
+    }
+
+    public void setBackgroundImageOpacity(int backgroundImageOpacity) {
+        this.backgroundImageOpacity = backgroundImageOpacity;
     }
 
 }

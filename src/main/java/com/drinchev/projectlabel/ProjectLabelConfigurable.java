@@ -3,17 +3,24 @@ package com.drinchev.projectlabel;
 import javax.swing.*;
 
 import com.drinchev.projectlabel.preferences.ApplicationPreferences;
+import com.drinchev.projectlabel.preferences.BackgroundImagePrefs;
 import com.drinchev.projectlabel.preferences.ProjectPreferences;
+import com.drinchev.projectlabel.resources.ui.BackgroundImagePosition;
 import com.drinchev.projectlabel.resources.ui.PluginConfiguration;
 
 import com.drinchev.projectlabel.utils.UtilsColor;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.project.Project;
 
+import java.util.Objects;
+
 public class ProjectLabelConfigurable implements Configurable {
+
+    private final static Logger LOG = Logger.getInstance(ProjectLabelConfigurable.class);
 
     private PluginConfiguration preferencesPanel;
 
@@ -40,15 +47,30 @@ public class ProjectLabelConfigurable implements Configurable {
     public JComponent createComponent() {
         if (null == preferencesPanel) {
             preferencesPanel = new PluginConfiguration();
-            preferencesPanel.setGlobalFontSize(applicationPreferences.getFontSize());
-            preferencesPanel.setGlobalFontName(applicationPreferences.getFontName());
-            preferencesPanel.setTextColor(projectPreferences.getTextColor());
-            preferencesPanel.setBackgroundColor(projectPreferences.getBackgroundColor());
-            preferencesPanel.setFontSize(projectPreferences.getFontSize());
-            preferencesPanel.setFontName(projectPreferences.getFontName());
-            preferencesPanel.setLabel(projectPreferences.getLabel());
         }
         return preferencesPanel.getRootPanel();
+    }
+
+    @Override
+    public void reset() {
+        preferencesPanel.setGlobalFontSize(applicationPreferences.getFontSize());
+        preferencesPanel.setGlobalFontName(applicationPreferences.getFontName());
+        preferencesPanel.setTextColor(projectPreferences.getTextColor());
+        preferencesPanel.setBackgroundColor(projectPreferences.getBackgroundColor());
+        preferencesPanel.setFontSize(projectPreferences.getFontSize());
+        preferencesPanel.setFontName(projectPreferences.getFontName());
+        preferencesPanel.setLabel(projectPreferences.getLabel());
+        preferencesPanel.setBackgroundImagePrefs(
+                projectPreferences.isBackgroundImageInherited() ? null : new BackgroundImagePrefs(
+                        projectPreferences.getBackgroundImageOpacity(),
+                        projectPreferences.getBackgroundImagePosition()
+                ),
+                new BackgroundImagePrefs(
+                        applicationPreferences.getBackgroundImageOpacity(),
+                        applicationPreferences.getBackgroundImagePosition()
+                )
+        );
+        preferencesPanel.initStates();
     }
 
     public boolean isModified() {
@@ -58,7 +80,14 @@ public class ProjectLabelConfigurable implements Configurable {
                 !projectPreferences.getLabel().equals(preferencesPanel.getLabel()) ||
                 !projectPreferences.getFontName().equals(preferencesPanel.getFontName()) ||
                 applicationPreferences.getFontSize() != preferencesPanel.getGlobalFontSize() ||
-                !applicationPreferences.getFontName().equals(preferencesPanel.getGlobalFontName());
+                !applicationPreferences.getFontName().equals(preferencesPanel.getGlobalFontName()) ||
+                !Objects.equals(
+                        BackgroundImagePrefs.from(projectPreferences.isBackgroundImageInherited(), projectPreferences.getBackgroundImageOpacity(), projectPreferences.getBackgroundImagePosition()),
+                        preferencesPanel.getBackgroundImagePrefs()) ||
+                !Objects.equals(
+                        BackgroundImagePrefs.from(applicationPreferences.getBackgroundImageOpacity(), applicationPreferences.getBackgroundImagePosition()),
+                        preferencesPanel.getGlobalBackgroundImagePrefs()
+                );
     }
 
     public void apply() {
@@ -70,11 +99,22 @@ public class ProjectLabelConfigurable implements Configurable {
             projectPreferences.setLabel(preferencesPanel.getLabel());
             applicationPreferences.setFontSize(preferencesPanel.getGlobalFontSize());
             applicationPreferences.setFontName(preferencesPanel.getGlobalFontName());
+            BackgroundImagePrefs projBackgroundImagePrefs = preferencesPanel.getBackgroundImagePrefs();
+            if (projBackgroundImagePrefs == null) {
+                projectPreferences.setBackgroundImageInherited(true);
+                projectPreferences.setBackgroundImagePosition(BackgroundImagePosition.HIDDEN);
+                projectPreferences.setBackgroundImageOpacity(-1);
+            } else {
+                projectPreferences.setBackgroundImageInherited(false);
+                projectPreferences.setBackgroundImagePosition(projBackgroundImagePrefs.position());
+                projectPreferences.setBackgroundImageOpacity(projBackgroundImagePrefs.opacity());
+            }
+            BackgroundImagePrefs appBackgroundImagePrefs = preferencesPanel.getGlobalBackgroundImagePrefs();
+            applicationPreferences.setBackgroundImagePosition(appBackgroundImagePrefs.position());
+            applicationPreferences.setBackgroundImageOpacity(appBackgroundImagePrefs.opacity());
+
             if (project != null) {
-                ProjectLabelService projectService = project.getService(ProjectLabelService.class);
-                if (projectService != null) {
-                    projectService.onSettingsChanged();
-                }
+                project.getService(ProjectLabel.class).onSettingsChanged();
             }
         }
     }

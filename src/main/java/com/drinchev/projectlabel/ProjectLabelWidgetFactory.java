@@ -1,6 +1,7 @@
 package com.drinchev.projectlabel;
 
 import com.drinchev.projectlabel.preferences.ApplicationPreferences;
+import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.preferences.ProjectPreferences;
 import com.drinchev.projectlabel.resources.ui.ProjectLabelStatusBarWidget;
 import com.intellij.openapi.project.Project;
@@ -34,7 +35,7 @@ public class ProjectLabelWidgetFactory implements StatusBarWidgetFactory {
     public @NotNull StatusBarWidget createWidget(@NotNull Project project) {
         ProjectPreferences projectPreferences = ProjectPreferences.getInstance(project);
         ApplicationPreferences applicationPreferences = ApplicationPreferences.getInstance();
-        return new ProjectLabelStatusBarWidget(project, projectPreferences, applicationPreferences);
+        return new ProjectLabelStatusBarWidget(project, new PreferencesReader(project, projectPreferences, applicationPreferences));
     }
 
     @Override

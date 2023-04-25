@@ -1,5 +1,6 @@
 package com.drinchev.projectlabel.preferences;
 
+import com.drinchev.projectlabel.resources.ui.BackgroundImagePosition;
 import com.drinchev.projectlabel.utils.UtilsColor;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -13,6 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @State(
         name = "ProjectLabel",
@@ -36,6 +40,15 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
 
     @OptionTag
     private String fontName = null;
+
+    @OptionTag
+    private String backgroundImagePosition = BackgroundImagePosition.HIDDEN.name();
+
+    @OptionTag
+    private int backgroundImageOpacity = 15;
+
+    @OptionTag
+    private boolean backgroundImageInherited = true;
 
     public static ProjectPreferences getInstance(Project project) {
         return project.getService(ProjectPreferences.class);
@@ -96,5 +109,30 @@ public class ProjectPreferences implements PersistentStateComponent<ProjectPrefe
         this.fontName = font.isEmpty() ? null : font;
     }
 
+    public void setBackgroundImagePosition(BackgroundImagePosition backgroundImagePosition) {
+        this.backgroundImagePosition = backgroundImagePosition != null ? backgroundImagePosition.name() : null;
+    }
 
+    public BackgroundImagePosition getBackgroundImagePosition() {
+        if (this.backgroundImagePosition == null) {
+            return null;
+        }
+        return BackgroundImagePosition.valueOf(this.backgroundImagePosition);
+    }
+
+    public int getBackgroundImageOpacity() {
+        return backgroundImageOpacity;
+    }
+
+    public void setBackgroundImageOpacity(int backgroundImageOpacity) {
+        this.backgroundImageOpacity = backgroundImageOpacity;
+    }
+
+    public boolean isBackgroundImageInherited() {
+        return backgroundImageInherited;
+    }
+
+    public void setBackgroundImageInherited(boolean backgroundImageInherited) {
+        this.backgroundImageInherited = backgroundImageInherited;
+    }
 }

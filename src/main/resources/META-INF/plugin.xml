@@ -8,12 +8,21 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.drinchev.projectlabel.preferences.ApplicationPreferences"/>
         <projectService serviceImplementation="com.drinchev.projectlabel.preferences.ProjectPreferences"/>
+        <projectService serviceImplementation="com.drinchev.projectlabel.ProjectLabel" />
+        <projectService serviceImplementation="com.drinchev.projectlabel.resources.ui.ProjectLabelBackgroundImage" />
         <projectConfigurable id="ProjectLabel" displayName="Project Label"
                              instance="com.drinchev.projectlabel.ProjectLabelConfigurable"/>
         <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory" order="last"/>
+        <postStartupActivity implementation="com.drinchev.projectlabel.ProjectLabelStartupActivity"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
     </actions>
+
+    <applicationListeners>
+        <listener class="com.drinchev.projectlabel.ProjectLabelProjectCloseListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </applicationListeners>
+
 </idea-plugin>

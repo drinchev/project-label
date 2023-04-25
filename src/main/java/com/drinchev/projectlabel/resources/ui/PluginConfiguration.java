@@ -1,12 +1,22 @@
 package com.drinchev.projectlabel.resources.ui;
 
+import com.drinchev.projectlabel.preferences.BackgroundImagePrefs;
+import com.drinchev.projectlabel.utils.UtilsIcon;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.FontComboBox;
+import com.intellij.ui.TitledSeparator;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class PluginConfiguration {
 
@@ -21,15 +31,43 @@ public class PluginConfiguration {
     private FontComboBox fontComboBoxFont;
     private JTextField textFieldLabel;
     private JSpinner spinnerGlobalFontSize;
-    private JCheckBox checkBoxInheritFontSize;
     private JCheckBox checkBoxInheritFont;
     private FontComboBox fontComboBoxGlobalFont;
-
+    private JLabel editorBackgroundOpacityLabel;
+    private JSpinner editorImageBackgroundOpacity;
+    private JCheckBox editorImageEnabledCheckbox;
+    private JLabel editorImageBackgroundOpacityUnitLabel;
+    private JLabel editorImagePositionLabel;
+    private JComboBox<String> editorImagePositionComboBox;
+    private JComboBox<String> editorImagePositionComboBoxGlobal;
+    private JSpinner editorImageBackgroundOpacityGlobal;
+    private JCheckBox editorImageEnabledCheckboxGlobal;
+    private JCheckBox editorImageInheritCheckbox;
+    private TitledSeparator globalPreferencesSectionTitle;
+    private TitledSeparator projectPreferencesSectionTitle;
+    private final SpinnerNumberModel editorImageBackgroundOpacityModel;
+    private final SpinnerNumberModel editorImageBackgroundOpacityModelGlobal;
     private ColorField colorFieldTextColor;
     private ColorField colorFieldBackgroundColor;
-
     private SpinnerNumberModel spinnerFontSizeModel;
     private SpinnerNumberModel spinnerGlobalFontSizeModel;
+
+    private final static Map<BackgroundImagePosition, Icon> LABEL_POSITIONS = Collections.unmodifiableMap(new LinkedHashMap<>() {{ // linked hash map to preserve order
+        put(BackgroundImagePosition.CENTER, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_center.svg"));
+        put(BackgroundImagePosition.TOP_LEFT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_left.svg"));
+        put(BackgroundImagePosition.TOP_RIGHT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_right.svg"));
+        put(BackgroundImagePosition.BOTTOM_RIGHT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_right.svg"));
+        put(BackgroundImagePosition.BOTTOM_LEFT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_left.svg"));
+    }});
+
+    private final static Map<BackgroundImagePosition, Icon> DISABLED_LABEL_POSITIONS = Collections.unmodifiableMap(new LinkedHashMap<>() {{ // linked hash map to preserve order
+        put(BackgroundImagePosition.CENTER, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.CENTER)));
+        put(BackgroundImagePosition.TOP_LEFT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_LEFT)));
+        put(BackgroundImagePosition.TOP_RIGHT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_RIGHT)));
+        put(BackgroundImagePosition.BOTTOM_RIGHT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_RIGHT)));
+        put(BackgroundImagePosition.BOTTOM_LEFT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_LEFT)));
+    }});
+
 
     /**
      * Constructor
@@ -51,23 +89,99 @@ public class PluginConfiguration {
         this.spinnerGlobalFontSizeModel = new SpinnerNumberModel(0, 0, 36, 1);
         this.spinnerGlobalFontSize.setModel(this.spinnerGlobalFontSizeModel);
 
-        checkBoxInheritFont.addActionListener(event -> {
-            if (checkBoxInheritFont.isSelected()) {
-                fontComboBoxFont.setEnabled(false);
-                fontComboBoxFont.setFontName(fontComboBoxGlobalFont.getFontName());
-            } else {
-                fontComboBoxFont.setEnabled(true);
-            }
-        });
+        this.spinnerGlobalFontSizeModel.addChangeListener(this::updateFontCheckboxDependingStatesAndValues);
+        this.fontComboBoxGlobalFont.addActionListener(this::updateFontCheckboxDependingStatesAndValues);
 
-        checkBoxInheritFontSize.addActionListener(event -> {
-            if (checkBoxInheritFontSize.isSelected()) {
-                spinnerFontSize.setEnabled(false);
-                spinnerFontSizeModel.setValue(spinnerGlobalFontSizeModel.getValue());
-            } else {
-                spinnerFontSize.setEnabled(true);
+        checkBoxInheritFont.addActionListener(this::updateFontCheckboxDependingStatesAndValues);
+
+        this.editorImageEnabledCheckbox.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
+
+        this.editorImageEnabledCheckboxGlobal.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
+
+        this.editorImageBackgroundOpacityModel = new SpinnerNumberModel(15, 0, 100, 1);
+        this.editorImageBackgroundOpacity.setModel(this.editorImageBackgroundOpacityModel);
+
+        this.editorImageBackgroundOpacityModelGlobal = new SpinnerNumberModel(15, 0, 100, 1);
+        this.editorImageBackgroundOpacityGlobal.setModel(this.editorImageBackgroundOpacityModelGlobal);
+
+        Stream.of(this.editorImagePositionComboBox, this.editorImagePositionComboBoxGlobal)
+                .forEach(comboBox -> {
+                    comboBox.setRenderer(new LabelWithIconRenderer(comboBox));
+                    comboBox.setModel(new DefaultComboBoxModel<>(LABEL_POSITIONS.keySet().stream().map(BackgroundImagePosition::displayName).toArray(String[]::new)));
+                });
+
+        editorImageInheritCheckbox.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
+
+        rootPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateSectionTitleWidths();
+            }
+
+            private void updateSectionTitleWidths() {
+                Insets insets = rootPanel.getInsets();
+                Border border = rootPanel.getBorder();
+                Insets borderInsets = border.getBorderInsets(rootPanel);
+                Dimension preferredSize = new Dimension(rootPanel.getWidth() - (insets.left + insets.right + borderInsets.left + borderInsets.right), -1);
+
+                globalPreferencesSectionTitle.setPreferredSize(preferredSize);
+                projectPreferencesSectionTitle.setPreferredSize(preferredSize);
             }
         });
+    }
+
+    private void updateFontCheckboxDependingStatesAndValues(Object ignore) {
+        final boolean inherited = this.checkBoxInheritFont.isSelected();
+        if (inherited) {
+            copyFontValuesFromGlobalToProject();
+        }
+        Stream.of(
+                this.spinnerFontSize,
+                this.fontComboBoxFont
+        ).forEach(component -> component.setEnabled(!inherited));
+    }
+
+    private void copyFontValuesFromGlobalToProject() {
+        if (this.checkBoxInheritFont.isSelected()) {
+            this.spinnerFontSizeModel.setValue(this.spinnerGlobalFontSizeModel.getValue());
+            this.fontComboBoxFont.setFontName(this.fontComboBoxGlobalFont.getFontName());
+        }
+    }
+
+    private void updateBackgroundImageCheckboxDependingStatesAndValues(Object ignore) {
+        // global
+        this.editorImageEnabledCheckboxGlobal.setEnabled(true);
+        final boolean globallyEnabled = this.editorImageEnabledCheckboxGlobal.isSelected();
+        Stream.of(
+                this.editorImagePositionComboBoxGlobal,
+                this.editorImageBackgroundOpacityGlobal
+        ).forEach(component -> component.setEnabled(globallyEnabled));
+
+        // project
+        final boolean inherited = this.editorImageInheritCheckbox.isSelected();
+        if (inherited) {
+            copyBackgroundImageValuesFromGlobalToProject();
+        }
+        this.editorImageEnabledCheckbox.setEnabled(!inherited);
+
+        final boolean projectEnabled = this.editorImageEnabledCheckbox.isSelected() && !inherited;
+        Stream.of(
+                this.editorImagePositionComboBox,
+                this.editorImageBackgroundOpacity
+        ).forEach(component -> component.setEnabled(projectEnabled));
+    }
+
+    private void copyBackgroundImageValuesFromGlobalToProject() {
+        if (this.editorImageInheritCheckbox.isSelected()) {
+            this.editorImageEnabledCheckbox.setSelected(this.editorImageEnabledCheckboxGlobal.isSelected());
+            this.editorImageBackgroundOpacityModel.setValue(this.editorImageBackgroundOpacityGlobal.getValue());
+            this.editorImagePositionComboBox.setSelectedItem(this.editorImagePositionComboBoxGlobal.getSelectedItem());
+        }
+    }
+
+    public void initStates() {
+            updateFontCheckboxDependingStatesAndValues(null);
+            updateBackgroundImageCheckboxDependingStatesAndValues(null);
     }
 
     public void setTextColor(Color color) {
@@ -87,16 +201,14 @@ public class PluginConfiguration {
     }
 
     public int getFontSize() {
-        return this.checkBoxInheritFontSize.isSelected() ? -1 : this.spinnerFontSizeModel.getNumber().intValue();
+        return this.checkBoxInheritFont.isSelected() ? -1 : this.spinnerFontSizeModel.getNumber().intValue();
     }
 
     public void setFontSize(int fontSize) {
-        if (fontSize == -1) {
-            this.checkBoxInheritFontSize.setSelected(true);
-            this.spinnerFontSizeModel.setValue(this.spinnerGlobalFontSizeModel.getValue());
-            this.spinnerFontSize.setEnabled(false);
-        } else {
+        if (fontSize > 0) {
             this.spinnerFontSizeModel.setValue(fontSize);
+        } else {
+            this.checkBoxInheritFont.setSelected(true);
         }
     }
 
@@ -109,12 +221,10 @@ public class PluginConfiguration {
     }
 
     public void setFontName(String font) {
-        if (font.isEmpty()) {
-            this.checkBoxInheritFont.setSelected(true);
-            this.fontComboBoxFont.setEnabled(false);
-            this.fontComboBoxFont.setFontName(this.fontComboBoxGlobalFont.getFontName());
-        } else {
+        if (!font.isEmpty()) {
             this.fontComboBoxFont.setFontName(font);
+        } else {
+            this.checkBoxInheritFont.setSelected(true);
         }
     }
 
@@ -143,6 +253,49 @@ public class PluginConfiguration {
         return name == null ? "Dialog" : name;
     }
 
+    // backgroundImage
+
+    public void setBackgroundImagePrefs(BackgroundImagePrefs projPrefs, @NotNull BackgroundImagePrefs globalPrefs) {
+        Objects.requireNonNull(globalPrefs);
+        if (globalPrefs.position() == BackgroundImagePosition.HIDDEN) {
+            editorImageEnabledCheckboxGlobal.setSelected(false);
+            Stream.of(this.editorImagePositionComboBoxGlobal, this.editorImageBackgroundOpacityGlobal, this.editorImageEnabledCheckboxGlobal)
+                    .forEach(component -> component.setEnabled(false));
+        } else {
+            editorImageEnabledCheckboxGlobal.setSelected(true);
+            Stream.of(this.editorImagePositionComboBoxGlobal, this.editorImageBackgroundOpacityGlobal, this.editorImageEnabledCheckboxGlobal)
+                    .forEach(component -> component.setEnabled(true));
+            editorImagePositionComboBoxGlobal.getModel().setSelectedItem(globalPrefs.position().displayName());
+            editorImageBackgroundOpacityModelGlobal.setValue(globalPrefs.opacity());
+        }
+        if (projPrefs == null) {
+            editorImageInheritCheckbox.setSelected(true);
+        } else {
+            editorImageInheritCheckbox.setSelected(false);
+            editorImageEnabledCheckbox.setSelected(projPrefs.position() != BackgroundImagePosition.HIDDEN);
+            editorImagePositionComboBox.getModel().setSelectedItem(projPrefs.position().displayName());
+            editorImageBackgroundOpacityModel.setValue(projPrefs.opacity());
+        }
+        updateBackgroundImageCheckboxDependingStatesAndValues(null);
+    }
+
+    public BackgroundImagePrefs getBackgroundImagePrefs() {
+        if (editorImageInheritCheckbox.isSelected()) {
+            return null;
+        }
+        int opacity = editorImageBackgroundOpacityModel.getNumber().intValue();
+        String positionString = (String) editorImagePositionComboBox.getSelectedItem();
+        BackgroundImagePosition position = BackgroundImagePosition.findByDisplayName(positionString);
+        return new BackgroundImagePrefs(opacity, editorImageEnabledCheckbox.isSelected() ? position : BackgroundImagePosition.HIDDEN);
+    }
+
+    public BackgroundImagePrefs getGlobalBackgroundImagePrefs() {
+        int opacity = editorImageBackgroundOpacityModelGlobal.getNumber().intValue();
+        String positionString = (String) editorImagePositionComboBoxGlobal.getSelectedItem();
+        BackgroundImagePosition position = BackgroundImagePosition.findByDisplayName(positionString);
+        return new BackgroundImagePrefs(opacity, editorImageEnabledCheckboxGlobal.isSelected() ? position : BackgroundImagePosition.HIDDEN);
+    }
+
     /**
      * @return JPanel
      */
@@ -150,4 +303,26 @@ public class PluginConfiguration {
         return rootPanel;
     }
 
+    private static class LabelWithIconRenderer extends DefaultListCellRenderer {
+
+        private final JComboBox<String> comboBox;
+
+        public LabelWithIconRenderer(@NotNull JComboBox<String> comboBox) {
+            this.comboBox = Objects.requireNonNull(comboBox);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            String positionDisplayName = (String) value;
+            BackgroundImagePosition position = BackgroundImagePosition.findByDisplayName(positionDisplayName);
+            if (comboBox.isEnabled()) {
+                label.setIcon(LABEL_POSITIONS.get(position));
+            } else {
+                label.setIcon(DISABLED_LABEL_POSITIONS.get(position));
+            }
+            return label;
+        }
+    }
 }
