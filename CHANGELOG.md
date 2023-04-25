@@ -4,10 +4,8 @@
 
 ## [Unreleased]
 
-### Added
+## [1.2.0] - 2023-04-25
 - Option to display the project label as a background image in the IDE's main window
-
-### Changed
 - Optimize Preferences UI
 
 ## [1.1.1] - 2023-04-07
@@ -35,7 +33,8 @@
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/drinchev/project-label/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/drinchev/project-label/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/drinchev/project-label/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/drinchev/project-label/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/drinchev/project-label/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/drinchev/project-label/compare/v0.9.0...v1.0.0
