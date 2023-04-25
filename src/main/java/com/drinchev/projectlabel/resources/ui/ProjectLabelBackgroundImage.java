@@ -1,5 +1,7 @@
 package com.drinchev.projectlabel.resources.ui;
 
+import static java.util.Objects.requireNonNull;
+
 import com.drinchev.projectlabel.preferences.ApplicationPreferences;
 import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.preferences.ProjectPreferences;
@@ -11,10 +13,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
 import com.intellij.util.ui.JBUI;
-import org.jetbrains.annotations.NotNull;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -24,9 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
-
-import static java.util.Objects.requireNonNull;
-
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import org.jetbrains.annotations.NotNull;
 
 @Service(Level.PROJECT)
 public class ProjectLabelBackgroundImage {
@@ -47,7 +45,7 @@ public class ProjectLabelBackgroundImage {
 
     public static final int BORDER_Y_MARGIN = 28;
 
-    private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
+    private static final Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
     private BufferedImage bufferedImage;
 
@@ -59,7 +57,8 @@ public class ProjectLabelBackgroundImage {
 
     public ProjectLabelBackgroundImage(@NotNull Project project) {
         this.project = requireNonNull(project);
-        this.preferences = new PreferencesReader(project, ProjectPreferences.getInstance(project), ApplicationPreferences.getInstance());
+        this.preferences = new PreferencesReader(
+                project, ProjectPreferences.getInstance(project), ApplicationPreferences.getInstance());
 
         var window = WindowManager.getInstance().getFrame(project);
         if (window == null) {
@@ -95,7 +94,11 @@ public class ProjectLabelBackgroundImage {
     private void setImageToIDE() {
         PropertiesComponent prop = projectLevelPropertiesComponent();
         String opacity = String.valueOf(preferences.backgroundImageOpacity());
-        String imageProp = String.format("%s,%s,plain,%s", resultingImage, opacity, preferences.backgroundImagePosition().name().toLowerCase());
+        String imageProp = String.format(
+                "%s,%s,plain,%s",
+                resultingImage,
+                opacity,
+                preferences.backgroundImagePosition().name().toLowerCase());
         String prev_editor = prop.getValue(IdeBackgroundUtil.EDITOR_PROP);
         prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imageProp);
         String prev_frame = prop.getValue(IdeBackgroundUtil.FRAME_PROP);
@@ -160,7 +163,8 @@ public class ProjectLabelBackgroundImage {
                 BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));
 
                 @SuppressWarnings("UseDPIAwareInsets")
-                final Insets insets = new Insets(JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
+                final Insets insets = new Insets(
+                        JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
                         JBUI.scale(BORDER_X_MARGIN) + BORDER_X_PADDING,
                         JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
                         JBUI.scale(BORDER_X_MARGIN) + BORDER_X_PADDING);
@@ -181,7 +185,8 @@ public class ProjectLabelBackgroundImage {
         LOG.debug("Preferred image ratio: " + preferredImageRatio);
 
         final int targetHeight = targetHeight();
-        final int targetWidth = (int) Math.round(targetHeight / preferredImageRatio.getHeight() * preferredImageRatio.getWidth());
+        final int targetWidth =
+                (int) Math.round(targetHeight / preferredImageRatio.getHeight() * preferredImageRatio.getWidth());
 
         final int maxWidth = projectFrame()
                 .map(JFrame::getWidth)
@@ -189,7 +194,8 @@ public class ProjectLabelBackgroundImage {
                 .orElse(targetWidth);
 
         if (targetWidth > maxWidth) {
-            int heightMatchingMaxWidth = (int) Math.round(maxWidth / preferredImageRatio.getWidth() * preferredImageRatio.getHeight());
+            int heightMatchingMaxWidth =
+                    (int) Math.round(maxWidth / preferredImageRatio.getWidth() * preferredImageRatio.getHeight());
             LOG.debug("Target image width is too big. Resizing to " + maxWidth + "x" + heightMatchingMaxWidth);
             return new Dimension(maxWidth, heightMatchingMaxWidth);
         } else {
@@ -204,7 +210,8 @@ public class ProjectLabelBackgroundImage {
             LOG.warn("Could not get project frame for project " + project.getName() + ". Using default height.");
             return DEFAULT_HEIGHT;
         }
-        LOG.info("Project frame size: " + projectFrame.get().getWidth() + "x" + projectFrame.get().getHeight());
+        LOG.info("Project frame size: " + projectFrame.get().getWidth() + "x"
+                + projectFrame.get().getHeight());
         int partialHeight = (int) Math.round(projectFrame.get().getHeight() * TARGET_HEIGHT_PERCENTAGE);
         int resultingHeight = Math.max(partialHeight, MIN_HEIGHT);
         LOG.info("Background image height: " + resultingHeight);

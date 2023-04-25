@@ -24,5 +24,4 @@ public class UtilsColor {
     public static Boolean isEqual(Color colorA, Color colorB) {
         return colorA.getRGB() == colorB.getRGB();
     }
-
 }

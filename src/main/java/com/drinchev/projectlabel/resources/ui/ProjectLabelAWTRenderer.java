@@ -1,35 +1,31 @@
 package com.drinchev.projectlabel.resources.ui;
 
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
+import static java.util.Objects.requireNonNull;
+
 import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.ImageUtil;
-import org.jetbrains.annotations.NotNull;
-
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
-
-import static java.util.Map.entry;
-import static java.util.Map.ofEntries;
-import static java.util.Objects.requireNonNull;
+import org.jetbrains.annotations.NotNull;
 
 public class ProjectLabelAWTRenderer {
 
-    private final static Logger LOG = Logger.getInstance(ProjectLabelAWTRenderer.class);
+    private static final Logger LOG = Logger.getInstance(ProjectLabelAWTRenderer.class);
 
-    public static final RenderingHints RENDERING_HINTS = new RenderingHints(
-            ofEntries(
-                    entry(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY),
-                    entry(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON),
-                    entry(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY),
-                    entry(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON),
-                    entry(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
-            )
-    );
+    public static final RenderingHints RENDERING_HINTS = new RenderingHints(ofEntries(
+            entry(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY),
+            entry(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON),
+            entry(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY),
+            entry(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON),
+            entry(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)));
 
     public static final int HORIZONTAL_PADDING = 8;
     public static final int VERTICAL_PADDING = 2;
@@ -38,18 +34,19 @@ public class ProjectLabelAWTRenderer {
 
     private final PreferencesReader preferences;
 
-
     public ProjectLabelAWTRenderer(@NotNull PreferencesReader preferences) {
         this.preferences = requireNonNull(preferences);
     }
 
     public static BufferedImage renderImageWithInsets(BufferedImage source, Insets border) {
-        final Dimension targetArea = new Dimension(source.getWidth() + border.left + border.right, source.getHeight() + border.top + border.bottom);
+        final Dimension targetArea = new Dimension(
+                source.getWidth() + border.left + border.right, source.getHeight() + border.top + border.bottom);
 
         // make sure to transfer image configuration (to account for high DPI)
         Graphics2D origGraphics = source.createGraphics();
         GraphicsConfiguration gfxConfig = origGraphics.getDeviceConfiguration();
-        BufferedImage bufferedImage = gfxConfig.createCompatibleImage(targetArea.width, targetArea.height, source.getTransparency());
+        BufferedImage bufferedImage =
+                gfxConfig.createCompatibleImage(targetArea.width, targetArea.height, source.getTransparency());
         origGraphics.dispose();
 
         Graphics2D g2d = bufferedImage.createGraphics();
@@ -86,7 +83,7 @@ public class ProjectLabelAWTRenderer {
 
         // background
         graphics.setColor(preferences.backgroundColor());
-        graphics.fillRoundRect(0, 0,  width, height, arcs.width, arcs.height);
+        graphics.fillRoundRect(0, 0, width, height, arcs.width, arcs.height);
 
         // label
         graphics.setColor(preferences.textColor());
@@ -95,14 +92,14 @@ public class ProjectLabelAWTRenderer {
         graphics.drawString(
                 preferences.label(),
                 (width - labelWidth) / 2,
-                (height - metrics.getHeight()) / 2 + metrics.getAscent()
-        );
+                (height - metrics.getHeight()) / 2 + metrics.getAscent());
         graphics.dispose();
         return bufferedImage;
     }
 
     private Dimension zoomed(double zoomFactor, Dimension dimension) {
-        return new Dimension((int) Math.round(zoomFactor * dimension.getWidth()), (int) Math.round(zoomFactor * dimension.getHeight()));
+        return new Dimension((int) Math.round(zoomFactor * dimension.getWidth()), (int)
+                Math.round(zoomFactor * dimension.getHeight()));
     }
 
     public Dimension getPreferredSize() {
@@ -133,14 +130,12 @@ public class ProjectLabelAWTRenderer {
     }
 
     private Dimension getTextDimensions(Font font, String label) {
-            FontRenderContext renderContext = new FontRenderContext(font.getTransform(), true, true);
+        FontRenderContext renderContext = new FontRenderContext(font.getTransform(), true, true);
 
-        Dimension textDimension = new Dimension(
-                (int) (font.getStringBounds(label, renderContext).getWidth()),
-                (int) (font.getStringBounds(label, renderContext).getHeight())
-        );
+        Dimension textDimension =
+                new Dimension((int) (font.getStringBounds(label, renderContext).getWidth()), (int)
+                        (font.getStringBounds(label, renderContext).getHeight()));
 
         return textDimension;
     }
-
 }

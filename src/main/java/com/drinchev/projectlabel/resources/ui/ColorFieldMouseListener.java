@@ -1,7 +1,6 @@
 package com.drinchev.projectlabel.resources.ui;
 
 import com.intellij.ui.ColorPicker;
-
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -20,33 +19,21 @@ public class ColorFieldMouseListener implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
         Color color = ColorPicker.showDialog(
-                this.colorField.getField(),
-                this.colorField.getName(),
-                this.colorField.getColor(),
-                false,
-                null,
-                false
-        );
+                this.colorField.getField(), this.colorField.getName(), this.colorField.getColor(), false, null, false);
         if (color != null) {
             this.colorField.setColor(color);
         }
     }
 
     @Override
-    public void mousePressed(MouseEvent mouseEvent) {
-    }
+    public void mousePressed(MouseEvent mouseEvent) {}
 
     @Override
-    public void mouseReleased(MouseEvent mouseEvent) {
-    }
+    public void mouseReleased(MouseEvent mouseEvent) {}
 
     @Override
-    public void mouseEntered(MouseEvent mouseEvent) {
-    }
+    public void mouseEntered(MouseEvent mouseEvent) {}
 
     @Override
-    public void mouseExited(MouseEvent mouseEvent) {
-
-    }
-
+    public void mouseExited(MouseEvent mouseEvent) {}
 }

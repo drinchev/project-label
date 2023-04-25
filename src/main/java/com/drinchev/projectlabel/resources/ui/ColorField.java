@@ -1,9 +1,8 @@
 package com.drinchev.projectlabel.resources.ui;
 
 import com.drinchev.projectlabel.utils.UtilsColor;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 class ColorField {
 
@@ -37,5 +36,4 @@ class ColorField {
     String getName() {
         return this.name;
     }
-
 }

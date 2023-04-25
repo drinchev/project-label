@@ -1,5 +1,7 @@
 package com.drinchev.projectlabel.resources.ui;
 
+import static java.util.Objects.requireNonNull;
+
 import com.drinchev.projectlabel.preferences.PreferencesReader;
 import com.drinchev.projectlabel.utils.UtilsUI;
 import com.intellij.openapi.diagnostic.Logger;
@@ -10,18 +12,14 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import java.awt.*;
+import javax.swing.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
-
-import static java.util.Objects.requireNonNull;
-
-
 public class ProjectLabelStatusBarWidget extends JButton implements CustomStatusBarWidget {
 
-    private final static Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
+    private static final Logger LOG = Logger.getInstance(ProjectLabelStatusBarWidget.class);
 
     @NonNls
     public static final String WIDGET_ID = "ProjectLabelWidget";
@@ -70,12 +68,10 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     }
 
     @Override
-    public void dispose() {
-    }
+    public void dispose() {}
 
     @Override
-    public void install(@NotNull StatusBar statusBar) {
-    }
+    public void install(@NotNull StatusBar statusBar) {}
 
     @Override
     @NotNull
@@ -124,6 +120,4 @@ public class ProjectLabelStatusBarWidget extends JButton implements CustomStatus
     public Dimension getMaximumSize() {
         return getPreferredSize();
     }
-
-
 }
