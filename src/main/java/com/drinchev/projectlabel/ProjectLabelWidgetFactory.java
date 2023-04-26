@@ -15,14 +15,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class ProjectLabelWidgetFactory implements StatusBarWidgetFactory {
     @Override
-    public @NotNull
-    @NonNls String getId() {
+    public @NotNull @NonNls String getId() {
         return ProjectLabelStatusBarWidget.WIDGET_ID;
     }
 
     @Override
-    public @NotNull
-    @NlsContexts.ConfigurableName String getDisplayName() {
+    public @NotNull @NlsContexts.ConfigurableName String getDisplayName() {
         return "Project Label";
     }
 
@@ -35,7 +33,8 @@ public class ProjectLabelWidgetFactory implements StatusBarWidgetFactory {
     public @NotNull StatusBarWidget createWidget(@NotNull Project project) {
         ProjectPreferences projectPreferences = ProjectPreferences.getInstance(project);
         ApplicationPreferences applicationPreferences = ApplicationPreferences.getInstance();
-        return new ProjectLabelStatusBarWidget(project, new PreferencesReader(project, projectPreferences, applicationPreferences));
+        return new ProjectLabelStatusBarWidget(
+                project, new PreferencesReader(project, projectPreferences, applicationPreferences));
     }
 
     @Override

@@ -1,3 +1,4 @@
+import com.diffplug.spotless.LineEnding
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 
@@ -8,6 +9,7 @@ plugins {
     id("java")
     id("org.jetbrains.intellij") version "1.13.3"
     id("org.jetbrains.changelog") version "2.0.0"
+    id("com.diffplug.spotless") version "6.18.0"
 }
 
 group = properties("pluginGroup").get()
@@ -32,6 +34,20 @@ intellij {
 changelog {
     groups.empty()
     repositoryUrl.set(properties("pluginRepositoryUrl"))
+}
+
+// Configure code style -- apply with `./gradlew spotlessApply`, check with `./gradlew spotlessCheck`
+spotless {
+
+    lineEndings = LineEnding.UNIX
+    encoding = Charsets.UTF_8
+
+    java {
+        importOrder()
+        removeUnusedImports()
+        palantirJavaFormat()
+        endWithNewline()
+    }
 }
 
 tasks {

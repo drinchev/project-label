@@ -6,24 +6,18 @@ import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
+import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
-import java.util.Objects;
-
-import static java.util.Objects.requireNonNull;
 
 @State(
         name = "ProjectLabel",
         storages = {
-                @Storage("project-label.xml"),
-        }
-)
+            @Storage("project-label.xml"),
+        })
 public class ProjectPreferences implements PersistentStateComponent<ProjectPreferences> {
 
     @OptionTag

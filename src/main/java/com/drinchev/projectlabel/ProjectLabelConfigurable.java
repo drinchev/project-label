@@ -1,26 +1,23 @@
 package com.drinchev.projectlabel;
 
-import javax.swing.*;
-
 import com.drinchev.projectlabel.preferences.ApplicationPreferences;
 import com.drinchev.projectlabel.preferences.BackgroundImagePrefs;
 import com.drinchev.projectlabel.preferences.ProjectPreferences;
 import com.drinchev.projectlabel.resources.ui.BackgroundImagePosition;
 import com.drinchev.projectlabel.resources.ui.PluginConfiguration;
-
 import com.drinchev.projectlabel.utils.UtilsColor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.project.Project;
+import java.util.Objects;
+import javax.swing.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.openapi.project.Project;
-
-import java.util.Objects;
 
 public class ProjectLabelConfigurable implements Configurable {
 
-    private final static Logger LOG = Logger.getInstance(ProjectLabelConfigurable.class);
+    private static final Logger LOG = Logger.getInstance(ProjectLabelConfigurable.class);
 
     private PluginConfiguration preferencesPanel;
 
@@ -61,33 +58,36 @@ public class ProjectLabelConfigurable implements Configurable {
         preferencesPanel.setFontName(projectPreferences.getFontName());
         preferencesPanel.setLabel(projectPreferences.getLabel());
         preferencesPanel.setBackgroundImagePrefs(
-                projectPreferences.isBackgroundImageInherited() ? null : new BackgroundImagePrefs(
-                        projectPreferences.getBackgroundImageOpacity(),
-                        projectPreferences.getBackgroundImagePosition()
-                ),
+                projectPreferences.isBackgroundImageInherited()
+                        ? null
+                        : new BackgroundImagePrefs(
+                                projectPreferences.getBackgroundImageOpacity(),
+                                projectPreferences.getBackgroundImagePosition()),
                 new BackgroundImagePrefs(
                         applicationPreferences.getBackgroundImageOpacity(),
-                        applicationPreferences.getBackgroundImagePosition()
-                )
-        );
+                        applicationPreferences.getBackgroundImagePosition()));
         preferencesPanel.initStates();
     }
 
     public boolean isModified() {
-        return !UtilsColor.isEqual(projectPreferences.getBackgroundColor(), preferencesPanel.getBackgroundColor()) ||
-                !UtilsColor.isEqual(projectPreferences.getTextColor(), preferencesPanel.getTextColor()) ||
-                projectPreferences.getFontSize() != preferencesPanel.getFontSize() ||
-                !projectPreferences.getLabel().equals(preferencesPanel.getLabel()) ||
-                !projectPreferences.getFontName().equals(preferencesPanel.getFontName()) ||
-                applicationPreferences.getFontSize() != preferencesPanel.getGlobalFontSize() ||
-                !applicationPreferences.getFontName().equals(preferencesPanel.getGlobalFontName()) ||
-                !Objects.equals(
-                        BackgroundImagePrefs.from(projectPreferences.isBackgroundImageInherited(), projectPreferences.getBackgroundImageOpacity(), projectPreferences.getBackgroundImagePosition()),
-                        preferencesPanel.getBackgroundImagePrefs()) ||
-                !Objects.equals(
-                        BackgroundImagePrefs.from(applicationPreferences.getBackgroundImageOpacity(), applicationPreferences.getBackgroundImagePosition()),
-                        preferencesPanel.getGlobalBackgroundImagePrefs()
-                );
+        return !UtilsColor.isEqual(projectPreferences.getBackgroundColor(), preferencesPanel.getBackgroundColor())
+                || !UtilsColor.isEqual(projectPreferences.getTextColor(), preferencesPanel.getTextColor())
+                || projectPreferences.getFontSize() != preferencesPanel.getFontSize()
+                || !projectPreferences.getLabel().equals(preferencesPanel.getLabel())
+                || !projectPreferences.getFontName().equals(preferencesPanel.getFontName())
+                || applicationPreferences.getFontSize() != preferencesPanel.getGlobalFontSize()
+                || !applicationPreferences.getFontName().equals(preferencesPanel.getGlobalFontName())
+                || !Objects.equals(
+                        BackgroundImagePrefs.from(
+                                projectPreferences.isBackgroundImageInherited(),
+                                projectPreferences.getBackgroundImageOpacity(),
+                                projectPreferences.getBackgroundImagePosition()),
+                        preferencesPanel.getBackgroundImagePrefs())
+                || !Objects.equals(
+                        BackgroundImagePrefs.from(
+                                applicationPreferences.getBackgroundImageOpacity(),
+                                applicationPreferences.getBackgroundImagePosition()),
+                        preferencesPanel.getGlobalBackgroundImagePrefs());
     }
 
     public void apply() {

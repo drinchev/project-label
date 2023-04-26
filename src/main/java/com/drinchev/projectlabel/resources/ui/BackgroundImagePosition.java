@@ -1,9 +1,8 @@
 package com.drinchev.projectlabel.resources.ui;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 
 public enum BackgroundImagePosition {
     HIDDEN("Hidden"),

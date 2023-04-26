@@ -6,8 +6,7 @@ public class ProjectLabelAWTDebugRenderer {
 
     public static final boolean DEBUG = false;
 
-    private ProjectLabelAWTDebugRenderer() {
-    }
+    private ProjectLabelAWTDebugRenderer() {}
 
     public static void drawDebugRect(Graphics2D g2d, int x, int y, int width, int height, Color color) {
         if (!DEBUG) {

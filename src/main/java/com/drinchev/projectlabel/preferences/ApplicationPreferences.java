@@ -8,22 +8,19 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
+import java.awt.*;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
-import java.util.Objects;
-
 @State(
         name = "ProjectLabelApplicationPreferences",
-        storages = {
-                @Storage("project-label-global.xml")
-        }
-)
+        storages = {@Storage("project-label-global.xml")})
 public class ApplicationPreferences implements PersistentStateComponent<ApplicationPreferences> {
 
     @OptionTag
-    private String fontSize = String.valueOf(UtilsFont.getStatusBarItemFont().getSize()); // https://jetbrains.design/intellij/principles/typography/#03
+    private String fontSize = String.valueOf(
+            UtilsFont.getStatusBarItemFont().getSize()); // https://jetbrains.design/intellij/principles/typography/#03
 
     @OptionTag
     private String fontName = UtilsFont.getStatusBarItemFont().getFontName();
@@ -70,7 +67,8 @@ public class ApplicationPreferences implements PersistentStateComponent<Applicat
     }
 
     public void setBackgroundImagePosition(@NotNull BackgroundImagePosition backgroundImagePosition) {
-        this.backgroundImagePosition = Objects.requireNonNull(backgroundImagePosition).name();
+        this.backgroundImagePosition =
+                Objects.requireNonNull(backgroundImagePosition).name();
     }
 
     public BackgroundImagePosition getBackgroundImagePosition() {
@@ -84,5 +82,4 @@ public class ApplicationPreferences implements PersistentStateComponent<Applicat
     public void setBackgroundImageOpacity(int backgroundImageOpacity) {
         this.backgroundImageOpacity = backgroundImageOpacity;
     }
-
 }

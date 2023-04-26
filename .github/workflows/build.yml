@@ -23,6 +23,7 @@ on:
 jobs:
 
   # Run Gradle Wrapper Validation Action to verify the wrapper's checksum
+  # Run spotlessCheck task to validate code style
   # Run verifyPlugin, IntelliJ Plugin Verifier, and test Gradle tasks
   # Build plugin and provide the artifact for the next workflow jobs
   build:
@@ -47,12 +48,16 @@ jobs:
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.6
 
-      # Setup Java 11 environment for the next steps
+      # Setup Java 17 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 17
+
+      # Validate Code Style
+      - name: Validate Code Style
+        run: ./gradlew spotlessCheck
 
       # Set environment variables
       - name: Export Properties

@@ -5,10 +5,6 @@ import com.drinchev.projectlabel.utils.UtilsIcon;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.FontComboBox;
 import com.intellij.ui.TitledSeparator;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -17,10 +13,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
+import javax.swing.*;
+import javax.swing.border.Border;
+import org.jetbrains.annotations.NotNull;
 
 public class PluginConfiguration {
 
-    private final static Logger LOG = Logger.getInstance(PluginConfiguration.class);
+    private static final Logger LOG = Logger.getInstance(PluginConfiguration.class);
 
     private JPanel rootPanel;
     private JTextField textFieldBackgroundColor;
@@ -52,37 +51,53 @@ public class PluginConfiguration {
     private SpinnerNumberModel spinnerFontSizeModel;
     private SpinnerNumberModel spinnerGlobalFontSizeModel;
 
-    private final static Map<BackgroundImagePosition, Icon> LABEL_POSITIONS = Collections.unmodifiableMap(new LinkedHashMap<>() {{ // linked hash map to preserve order
-        put(BackgroundImagePosition.CENTER, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_center.svg"));
-        put(BackgroundImagePosition.TOP_LEFT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_left.svg"));
-        put(BackgroundImagePosition.TOP_RIGHT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_right.svg"));
-        put(BackgroundImagePosition.BOTTOM_RIGHT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_right.svg"));
-        put(BackgroundImagePosition.BOTTOM_LEFT, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_left.svg"));
-    }});
+    private static final Map<BackgroundImagePosition, Icon> LABEL_POSITIONS =
+            Collections.unmodifiableMap(new LinkedHashMap<>() {
+                { // linked hash map to preserve order
+                    put(BackgroundImagePosition.CENTER, UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_center.svg"));
+                    put(
+                            BackgroundImagePosition.TOP_LEFT,
+                            UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_left.svg"));
+                    put(
+                            BackgroundImagePosition.TOP_RIGHT,
+                            UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_top_right.svg"));
+                    put(
+                            BackgroundImagePosition.BOTTOM_RIGHT,
+                            UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_right.svg"));
+                    put(
+                            BackgroundImagePosition.BOTTOM_LEFT,
+                            UtilsIcon.loadRasterizedIcon("icons/bg_image_pos_bottom_left.svg"));
+                }
+            });
 
-    private final static Map<BackgroundImagePosition, Icon> DISABLED_LABEL_POSITIONS = Collections.unmodifiableMap(new LinkedHashMap<>() {{ // linked hash map to preserve order
-        put(BackgroundImagePosition.CENTER, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.CENTER)));
-        put(BackgroundImagePosition.TOP_LEFT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_LEFT)));
-        put(BackgroundImagePosition.TOP_RIGHT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_RIGHT)));
-        put(BackgroundImagePosition.BOTTOM_RIGHT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_RIGHT)));
-        put(BackgroundImagePosition.BOTTOM_LEFT, UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_LEFT)));
-    }});
-
+    private static final Map<BackgroundImagePosition, Icon> DISABLED_LABEL_POSITIONS =
+            Collections.unmodifiableMap(new LinkedHashMap<>() {
+                { // linked hash map to preserve order
+                    put(
+                            BackgroundImagePosition.CENTER,
+                            UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.CENTER)));
+                    put(
+                            BackgroundImagePosition.TOP_LEFT,
+                            UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_LEFT)));
+                    put(
+                            BackgroundImagePosition.TOP_RIGHT,
+                            UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.TOP_RIGHT)));
+                    put(
+                            BackgroundImagePosition.BOTTOM_RIGHT,
+                            UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_RIGHT)));
+                    put(
+                            BackgroundImagePosition.BOTTOM_LEFT,
+                            UtilsIcon.disabledIcon(LABEL_POSITIONS.get(BackgroundImagePosition.BOTTOM_LEFT)));
+                }
+            });
 
     /**
      * Constructor
      */
     public PluginConfiguration() {
-        this.colorFieldTextColor = new ColorField(
-                textFieldTextColor,
-                panelTextColor,
-                "Text Color"
-        );
-        this.colorFieldBackgroundColor = new ColorField(
-                textFieldBackgroundColor,
-                panelBackgroundColor,
-                "Background Color"
-        );
+        this.colorFieldTextColor = new ColorField(textFieldTextColor, panelTextColor, "Text Color");
+        this.colorFieldBackgroundColor =
+                new ColorField(textFieldBackgroundColor, panelBackgroundColor, "Background Color");
         this.spinnerFontSizeModel = new SpinnerNumberModel(0, 0, 36, 1);
         this.spinnerFontSize.setModel(this.spinnerFontSizeModel);
 
@@ -96,7 +111,8 @@ public class PluginConfiguration {
 
         this.editorImageEnabledCheckbox.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
 
-        this.editorImageEnabledCheckboxGlobal.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
+        this.editorImageEnabledCheckboxGlobal.addActionListener(
+                this::updateBackgroundImageCheckboxDependingStatesAndValues);
 
         this.editorImageBackgroundOpacityModel = new SpinnerNumberModel(15, 0, 100, 1);
         this.editorImageBackgroundOpacity.setModel(this.editorImageBackgroundOpacityModel);
@@ -107,7 +123,9 @@ public class PluginConfiguration {
         Stream.of(this.editorImagePositionComboBox, this.editorImagePositionComboBoxGlobal)
                 .forEach(comboBox -> {
                     comboBox.setRenderer(new LabelWithIconRenderer(comboBox));
-                    comboBox.setModel(new DefaultComboBoxModel<>(LABEL_POSITIONS.keySet().stream().map(BackgroundImagePosition::displayName).toArray(String[]::new)));
+                    comboBox.setModel(new DefaultComboBoxModel<>(LABEL_POSITIONS.keySet().stream()
+                            .map(BackgroundImagePosition::displayName)
+                            .toArray(String[]::new)));
                 });
 
         editorImageInheritCheckbox.addActionListener(this::updateBackgroundImageCheckboxDependingStatesAndValues);
@@ -122,7 +140,9 @@ public class PluginConfiguration {
                 Insets insets = rootPanel.getInsets();
                 Border border = rootPanel.getBorder();
                 Insets borderInsets = border.getBorderInsets(rootPanel);
-                Dimension preferredSize = new Dimension(rootPanel.getWidth() - (insets.left + insets.right + borderInsets.left + borderInsets.right), -1);
+                Dimension preferredSize = new Dimension(
+                        rootPanel.getWidth() - (insets.left + insets.right + borderInsets.left + borderInsets.right),
+                        -1);
 
                 globalPreferencesSectionTitle.setPreferredSize(preferredSize);
                 projectPreferencesSectionTitle.setPreferredSize(preferredSize);
@@ -135,10 +155,7 @@ public class PluginConfiguration {
         if (inherited) {
             copyFontValuesFromGlobalToProject();
         }
-        Stream.of(
-                this.spinnerFontSize,
-                this.fontComboBoxFont
-        ).forEach(component -> component.setEnabled(!inherited));
+        Stream.of(this.spinnerFontSize, this.fontComboBoxFont).forEach(component -> component.setEnabled(!inherited));
     }
 
     private void copyFontValuesFromGlobalToProject() {
@@ -152,10 +169,8 @@ public class PluginConfiguration {
         // global
         this.editorImageEnabledCheckboxGlobal.setEnabled(true);
         final boolean globallyEnabled = this.editorImageEnabledCheckboxGlobal.isSelected();
-        Stream.of(
-                this.editorImagePositionComboBoxGlobal,
-                this.editorImageBackgroundOpacityGlobal
-        ).forEach(component -> component.setEnabled(globallyEnabled));
+        Stream.of(this.editorImagePositionComboBoxGlobal, this.editorImageBackgroundOpacityGlobal)
+                .forEach(component -> component.setEnabled(globallyEnabled));
 
         // project
         final boolean inherited = this.editorImageInheritCheckbox.isSelected();
@@ -165,10 +180,8 @@ public class PluginConfiguration {
         this.editorImageEnabledCheckbox.setEnabled(!inherited);
 
         final boolean projectEnabled = this.editorImageEnabledCheckbox.isSelected() && !inherited;
-        Stream.of(
-                this.editorImagePositionComboBox,
-                this.editorImageBackgroundOpacity
-        ).forEach(component -> component.setEnabled(projectEnabled));
+        Stream.of(this.editorImagePositionComboBox, this.editorImageBackgroundOpacity)
+                .forEach(component -> component.setEnabled(projectEnabled));
     }
 
     private void copyBackgroundImageValuesFromGlobalToProject() {
@@ -180,8 +193,8 @@ public class PluginConfiguration {
     }
 
     public void initStates() {
-            updateFontCheckboxDependingStatesAndValues(null);
-            updateBackgroundImageCheckboxDependingStatesAndValues(null);
+        updateFontCheckboxDependingStatesAndValues(null);
+        updateBackgroundImageCheckboxDependingStatesAndValues(null);
     }
 
     public void setTextColor(Color color) {
@@ -201,7 +214,9 @@ public class PluginConfiguration {
     }
 
     public int getFontSize() {
-        return this.checkBoxInheritFont.isSelected() ? -1 : this.spinnerFontSizeModel.getNumber().intValue();
+        return this.checkBoxInheritFont.isSelected()
+                ? -1
+                : this.spinnerFontSizeModel.getNumber().intValue();
     }
 
     public void setFontSize(int fontSize) {
@@ -259,13 +274,21 @@ public class PluginConfiguration {
         Objects.requireNonNull(globalPrefs);
         if (globalPrefs.position() == BackgroundImagePosition.HIDDEN) {
             editorImageEnabledCheckboxGlobal.setSelected(false);
-            Stream.of(this.editorImagePositionComboBoxGlobal, this.editorImageBackgroundOpacityGlobal, this.editorImageEnabledCheckboxGlobal)
+            Stream.of(
+                            this.editorImagePositionComboBoxGlobal,
+                            this.editorImageBackgroundOpacityGlobal,
+                            this.editorImageEnabledCheckboxGlobal)
                     .forEach(component -> component.setEnabled(false));
         } else {
             editorImageEnabledCheckboxGlobal.setSelected(true);
-            Stream.of(this.editorImagePositionComboBoxGlobal, this.editorImageBackgroundOpacityGlobal, this.editorImageEnabledCheckboxGlobal)
+            Stream.of(
+                            this.editorImagePositionComboBoxGlobal,
+                            this.editorImageBackgroundOpacityGlobal,
+                            this.editorImageEnabledCheckboxGlobal)
                     .forEach(component -> component.setEnabled(true));
-            editorImagePositionComboBoxGlobal.getModel().setSelectedItem(globalPrefs.position().displayName());
+            editorImagePositionComboBoxGlobal
+                    .getModel()
+                    .setSelectedItem(globalPrefs.position().displayName());
             editorImageBackgroundOpacityModelGlobal.setValue(globalPrefs.opacity());
         }
         if (projPrefs == null) {
@@ -273,7 +296,9 @@ public class PluginConfiguration {
         } else {
             editorImageInheritCheckbox.setSelected(false);
             editorImageEnabledCheckbox.setSelected(projPrefs.position() != BackgroundImagePosition.HIDDEN);
-            editorImagePositionComboBox.getModel().setSelectedItem(projPrefs.position().displayName());
+            editorImagePositionComboBox
+                    .getModel()
+                    .setSelectedItem(projPrefs.position().displayName());
             editorImageBackgroundOpacityModel.setValue(projPrefs.opacity());
         }
         updateBackgroundImageCheckboxDependingStatesAndValues(null);
@@ -286,14 +311,16 @@ public class PluginConfiguration {
         int opacity = editorImageBackgroundOpacityModel.getNumber().intValue();
         String positionString = (String) editorImagePositionComboBox.getSelectedItem();
         BackgroundImagePosition position = BackgroundImagePosition.findByDisplayName(positionString);
-        return new BackgroundImagePrefs(opacity, editorImageEnabledCheckbox.isSelected() ? position : BackgroundImagePosition.HIDDEN);
+        return new BackgroundImagePrefs(
+                opacity, editorImageEnabledCheckbox.isSelected() ? position : BackgroundImagePosition.HIDDEN);
     }
 
     public BackgroundImagePrefs getGlobalBackgroundImagePrefs() {
         int opacity = editorImageBackgroundOpacityModelGlobal.getNumber().intValue();
         String positionString = (String) editorImagePositionComboBoxGlobal.getSelectedItem();
         BackgroundImagePosition position = BackgroundImagePosition.findByDisplayName(positionString);
-        return new BackgroundImagePrefs(opacity, editorImageEnabledCheckboxGlobal.isSelected() ? position : BackgroundImagePosition.HIDDEN);
+        return new BackgroundImagePrefs(
+                opacity, editorImageEnabledCheckboxGlobal.isSelected() ? position : BackgroundImagePosition.HIDDEN);
     }
 
     /**
@@ -312,7 +339,8 @@ public class PluginConfiguration {
         }
 
         @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(
+                JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
             String positionDisplayName = (String) value;

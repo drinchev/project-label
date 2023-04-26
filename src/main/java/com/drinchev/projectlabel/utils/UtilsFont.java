@@ -1,7 +1,6 @@
 package com.drinchev.projectlabel.utils;
 
 import com.intellij.util.ui.JBFont;
-
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.util.HashMap;
@@ -51,5 +50,4 @@ public class UtilsFont {
         }
         throw new IllegalStateException("Unable to determine the status bar font size");
     }
-
 }

@@ -1,13 +1,12 @@
 package com.drinchev.projectlabel.preferences;
 
+import static java.util.Objects.requireNonNull;
+
 import com.drinchev.projectlabel.resources.ui.BackgroundImagePosition;
 import com.drinchev.projectlabel.utils.UtilsFont;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-
 import java.awt.*;
-
-import static java.util.Objects.requireNonNull;
+import org.jetbrains.annotations.NotNull;
 
 public class PreferencesReader {
 
@@ -16,7 +15,10 @@ public class PreferencesReader {
 
     private final ProjectPreferences projectPrefs;
 
-    public PreferencesReader(@NotNull Project project, @NotNull ProjectPreferences projectPrefs, @NotNull ApplicationPreferences appPrefs) {
+    public PreferencesReader(
+            @NotNull Project project,
+            @NotNull ProjectPreferences projectPrefs,
+            @NotNull ApplicationPreferences appPrefs) {
         this.project = requireNonNull(project);
         this.appPrefs = requireNonNull(appPrefs);
         this.projectPrefs = requireNonNull(projectPrefs);
@@ -44,12 +46,14 @@ public class PreferencesReader {
     }
 
     public BackgroundImagePosition backgroundImagePosition() {
-        return projectPrefs.isBackgroundImageInherited() ? appPrefs.getBackgroundImagePosition() : projectPrefs.getBackgroundImagePosition();
+        return projectPrefs.isBackgroundImageInherited()
+                ? appPrefs.getBackgroundImagePosition()
+                : projectPrefs.getBackgroundImagePosition();
     }
 
     public int backgroundImageOpacity() {
-        return projectPrefs.isBackgroundImageInherited() ? appPrefs.getBackgroundImageOpacity() : projectPrefs.getBackgroundImageOpacity();
+        return projectPrefs.isBackgroundImageInherited()
+                ? appPrefs.getBackgroundImageOpacity()
+                : projectPrefs.getBackgroundImageOpacity();
     }
-
-
 }
