@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
-public class ColorPaletteElement extends JPanel {
+public class ColorPaletteElement extends JButton {
 
     private static final Map<Key, Object> RENDERING_HINTS = Map.of(
             RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON,
@@ -17,15 +17,14 @@ public class ColorPaletteElement extends JPanel {
 
     private ColorPair colors;
 
-    public ColorPaletteElement() {}
-
     public ColorPaletteElement(@NotNull ColorPair colors) {
+        super();
+        setContentAreaFilled(false); // don't paint button background
+        setBorderPainted(false); // don't paint button border
+        setFocusPainted(false); // don't paint focus indicator
+        //        setBorder(null); // remove border
+        //        setMargin(JBUI.emptyInsets()); // remove insets
         this.colors = requireNonNull(colors);
-    }
-
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(40, 40);
     }
 
     @Override
@@ -43,6 +42,12 @@ public class ColorPaletteElement extends JPanel {
 
         g2d.setColor(colors.foreground());
         g2d.fillArc(x, y, diameter, diameter, 225, 180);
+
+        if (isSelected()) {
+            g2d.setColor(Color.RED); // adapt
+            g2d.setStroke(new BasicStroke(2));
+            g2d.drawArc(x, y, diameter, diameter, 0, 360);
+        }
         g2d.dispose();
     }
 
@@ -62,5 +67,31 @@ public class ColorPaletteElement extends JPanel {
         // center frame on screen
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    public ColorPair getColors() {
+        return colors;
+    }
+
+    // make sure to keep the button square
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        size.width = size.height;
+        return size;
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        Dimension size = super.getMinimumSize();
+        size.width = size.height;
+        return size;
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        Dimension size = super.getMaximumSize();
+        size.width = size.height;
+        return size;
     }
 }

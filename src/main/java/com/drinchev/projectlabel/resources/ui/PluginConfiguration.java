@@ -44,6 +44,9 @@ public class PluginConfiguration {
     private JCheckBox editorImageInheritCheckbox;
     private TitledSeparator globalPreferencesSectionTitle;
     private TitledSeparator projectPreferencesSectionTitle;
+    private ColorPaletteChooser colorPaletteChooser;
+    private JPanel backgroundColorPanel;
+    private JPanel textColorPanel;
     private final SpinnerNumberModel editorImageBackgroundOpacityModel;
     private final SpinnerNumberModel editorImageBackgroundOpacityModelGlobal;
     private ColorField colorFieldTextColor;
@@ -148,6 +151,21 @@ public class PluginConfiguration {
                 projectPreferencesSectionTitle.setPreferredSize(preferredSize);
             }
         });
+
+        colorPaletteChooser.addSelectionListener(this::onColorPaletteSelectionChanged);
+    }
+
+    private void onColorPaletteSelectionChanged(ColorPair colorPair) {
+        if (colorPair != null) {
+            colorFieldTextColor.setColor(colorPair.foreground());
+            colorFieldBackgroundColor.setColor(colorPair.background());
+        }
+    }
+
+    private void updateColorPaletteSelectionBasedOnColors() {
+        if (getTextColor() != null && getBackgroundColor() != null) {
+            colorPaletteChooser.preSelect(new ColorPair(getBackgroundColor(), getTextColor()));
+        }
     }
 
     private void updateFontCheckboxDependingStatesAndValues(Object ignore) {
@@ -199,6 +217,7 @@ public class PluginConfiguration {
 
     public void setTextColor(Color color) {
         this.colorFieldTextColor.setColor(color);
+        updateColorPaletteSelectionBasedOnColors();
     }
 
     public Color getTextColor() {
@@ -207,6 +226,7 @@ public class PluginConfiguration {
 
     public void setBackgroundColor(Color color) {
         this.colorFieldBackgroundColor.setColor(color);
+        updateColorPaletteSelectionBasedOnColors();
     }
 
     public Color getBackgroundColor() {
