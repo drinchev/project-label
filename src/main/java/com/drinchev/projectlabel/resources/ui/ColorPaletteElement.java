@@ -2,6 +2,7 @@ package com.drinchev.projectlabel.resources.ui;
 
 import static java.util.Objects.requireNonNull;
 
+import com.intellij.util.ui.JBUI;
 import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.util.Map;
@@ -33,7 +34,8 @@ public class ColorPaletteElement extends JButton {
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setRenderingHints(RENDERING_HINTS);
 
-        int diameter = Math.min(getWidth(), getHeight()) - 4;
+        final int border = 4;
+        int diameter = Math.min(getWidth(), getHeight()) - border;
         int x = (getWidth() - diameter) / 2;
         int y = (getHeight() - diameter) / 2;
 
@@ -44,16 +46,11 @@ public class ColorPaletteElement extends JButton {
         g2d.fillArc(x, y, diameter, diameter, 225, 180);
 
         if (isSelected()) {
-            g2d.setColor(Color.RED); // adapt
-            g2d.setStroke(new BasicStroke(2));
+            g2d.setColor(JBUI.CurrentTheme.Focus.focusColor());
+            g2d.setStroke(new BasicStroke(JBUI.scale(2)));
             g2d.drawArc(x, y, diameter, diameter, 0, 360);
         }
         g2d.dispose();
-    }
-
-    public void setColors(@NotNull ColorPair colors) {
-        this.colors = requireNonNull(colors);
-        repaint();
     }
 
     public static void main(String[] args) {
