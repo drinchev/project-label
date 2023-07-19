@@ -32,7 +32,7 @@ public class ColorPaletteChooser {
             elements().forEach(element -> element.setSelected(false));
             return;
         }
-        elements().forEach(element -> element.setSelected(element.getColors().equals(colorPair)));
+        elements().forEach(element -> element.setSelected(element.getColors().sameColors(colorPair)));
     }
 
     private void createUIComponents() {

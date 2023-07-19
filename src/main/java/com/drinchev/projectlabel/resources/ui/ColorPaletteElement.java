@@ -26,6 +26,7 @@ public class ColorPaletteElement extends JButton {
         //        setBorder(null); // remove border
         //        setMargin(JBUI.emptyInsets()); // remove insets
         this.colors = requireNonNull(colors);
+        this.setToolTipText(colors.colorName());
     }
 
     @Override
@@ -42,7 +43,7 @@ public class ColorPaletteElement extends JButton {
         g2d.setColor(colors.background());
         g2d.fillArc(x, y, diameter, diameter, 45, 180);
 
-        g2d.setColor(colors.foreground());
+        g2d.setColor(colors.text());
         g2d.fillArc(x, y, diameter, diameter, 225, 180);
 
         if (isSelected()) {
@@ -57,7 +58,7 @@ public class ColorPaletteElement extends JButton {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        ColorPaletteElement paletteElement = new ColorPaletteElement(new ColorPair("#6369D1", "#F5F5F5"));
+        ColorPaletteElement paletteElement = new ColorPaletteElement(new ColorPair("#6369D1", "#F5F5F5", "Test"));
         paletteElement.setMinimumSize(new Dimension(20, 20));
         frame.add(paletteElement);
         frame.pack();

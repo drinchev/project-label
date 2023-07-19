@@ -15,30 +15,29 @@ public final class ColorPairFactory {
 
     private static List<ColorPair> createDarkColorPairs() {
         return List.of(
-                new ColorPair("#6369D1", "#F5F5F5"),
-                new ColorPair("#F8E9A1", "#252525"),
-                new ColorPair("#F4A261", "#F7F7F7"),
-                new ColorPair("#A7E9AF", "#212121"),
-                new ColorPair("#F7CAC9", "#292929"),
-                new ColorPair("#9BC995", "#F7F7F7"),
-                new ColorPair("#E2B7B5", "#F7F7F7"),
-                new ColorPair("#F6B6D1", "#F7F7F7"),
-                new ColorPair("#B5EAD7", "#212121"),
-                new ColorPair("#D6D6D6", "#212121"));
+                new ColorPair("#b12f2f", "#ffffff", "Default Dark"),
+                new ColorPair("#3A60A7", "#F5F5F5", "Moonlit Ocean"),
+                new ColorPair("#0F9B8E", "#ffffff", "Emerald Dusk"),
+                new ColorPair("#6A057F", "#D8D8D8", "Grape Twilight"),
+                new ColorPair("#A83C09", "#F9F6F7", "Spicy Night"),
+                new ColorPair("#7261A3", "#ffffff", "Lavender Haze"),
+                new ColorPair("#355070", "#f8f8f2", "Midnight Blue"),
+                new ColorPair("#6D597A", "#f8f8f2", "Smoky Amethyst"),
+                new ColorPair("#FF6700", "#202020", "Tangerine Dream"),
+                new ColorPair("#50CB93", "#202020", "Minted Shadow"));
     }
 
     private static List<ColorPair> createLightColorPairs() {
-
         return List.of(
-                new ColorPair("#FFE0C7", "#454545"),
-                new ColorPair("#D4F4DD", "#2B2D42"),
-                new ColorPair("#E3B5A4", "#303C6C"),
-                new ColorPair("#F5D5CB", "#4E4B66"),
-                new ColorPair("#FFD6BA", "#1A1A1D"),
-                new ColorPair("#F0EAD6", "#6B5B95"),
-                new ColorPair("#BEE9E8", "#364F6B"),
-                new ColorPair("#FFE8D6", "#3F3F3F"),
-                new ColorPair("#C7CEEA", "#3E3F3A"),
-                new ColorPair("#F6E7D2", "#2E2D4D"));
+                new ColorPair("#b12f2f", "#ffffff", "Default Light"),
+                new ColorPair("#5F0F40", "#E9E9F5", "Berry Fusion"),
+                new ColorPair("#D63447", "#E3F2FD", "Sunset Delight"),
+                new ColorPair("#106466", "#F3F9FB", "Ocean Spritz"),
+                new ColorPair("#56A3A6", "#2A2B2A", "Aqua Harmony"),
+                new ColorPair("#36558F", "#E8F1F2", "Blue Iris"),
+                new ColorPair("#DB504A", "#F5F5F5", "Spiced Coral"),
+                new ColorPair("#F45B69", "#F5F5F5", "Strawberry Fizz"),
+                new ColorPair("#364F6B", "#ffffff", "Nautical Echo"),
+                new ColorPair("#588B8B", "#F7F7F7", "Sea Salt Mist"));
     }
 }

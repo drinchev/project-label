@@ -157,14 +157,14 @@ public class PluginConfiguration {
 
     private void onColorPaletteSelectionChanged(ColorPair colorPair) {
         if (colorPair != null) {
-            colorFieldTextColor.setColor(colorPair.foreground());
+            colorFieldTextColor.setColor(colorPair.text());
             colorFieldBackgroundColor.setColor(colorPair.background());
         }
     }
 
     private void updateColorPaletteSelectionBasedOnColors() {
         if (getTextColor() != null && getBackgroundColor() != null) {
-            colorPaletteChooser.preSelect(new ColorPair(getBackgroundColor(), getTextColor()));
+            colorPaletteChooser.preSelect(new ColorPair(getBackgroundColor(), getTextColor(), null));
         }
     }
 
