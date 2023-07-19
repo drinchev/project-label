@@ -101,6 +101,9 @@ public class PluginConfiguration {
         this.colorFieldTextColor = new ColorField(textFieldTextColor, panelTextColor, "Text Color");
         this.colorFieldBackgroundColor =
                 new ColorField(textFieldBackgroundColor, panelBackgroundColor, "Background Color");
+        Stream.of(colorFieldTextColor, colorFieldBackgroundColor)
+                .forEach(
+                        colorField -> colorField.addColorFieldListener(this::updateColorPaletteSelectionBasedOnColors));
         this.spinnerFontSizeModel = new SpinnerNumberModel(0, 0, 36, 1);
         this.spinnerFontSize.setModel(this.spinnerFontSizeModel);
 
