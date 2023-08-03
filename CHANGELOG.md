@@ -3,6 +3,7 @@
 # Project Label Changelog
 
 ## [Unreleased]
+- Option to choose colors from good-looking presets (or manually pick colors like before)
 
 ## [1.2.0] - 2023-04-25
 - Option to display the project label as a background image in the IDE's main window
