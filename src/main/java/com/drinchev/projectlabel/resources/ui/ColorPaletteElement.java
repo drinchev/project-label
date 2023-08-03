@@ -54,19 +54,6 @@ public class ColorPaletteElement extends JButton {
         g2d.dispose();
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
-        ColorPaletteElement paletteElement = new ColorPaletteElement(new ColorPair("#6369D1", "#F5F5F5", "Test"));
-        paletteElement.setMinimumSize(new Dimension(20, 20));
-        frame.add(paletteElement);
-        frame.pack();
-        // center frame on screen
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
-
     public ColorPair getColors() {
         return colors;
     }
