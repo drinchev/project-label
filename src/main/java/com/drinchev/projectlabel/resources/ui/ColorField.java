@@ -1,7 +1,9 @@
 package com.drinchev.projectlabel.resources.ui;
 
 import com.drinchev.projectlabel.utils.UtilsColor;
-import java.awt.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 class ColorField {
@@ -10,6 +12,8 @@ class ColorField {
     private JPanel panel;
     private Color color;
     private String name;
+
+    private final List<ColorFieldListener> colorFieldListeners = new ArrayList<>();
 
     ColorField(JTextField field, JPanel panel, String name) {
         this.field = field;
@@ -27,6 +31,7 @@ class ColorField {
         this.color = color;
         field.setText(UtilsColor.toHex(this.color));
         panel.setBackground(this.color);
+        notifyColorListeners();
     }
 
     JTextField getField() {
@@ -35,5 +40,21 @@ class ColorField {
 
     String getName() {
         return this.name;
+    }
+
+    void addColorFieldListener(ColorFieldListener listener) {
+        this.colorFieldListeners.add(listener);
+    }
+
+    void removeColorFieldListener(ColorFieldListener listener) {
+        this.colorFieldListeners.remove(listener);
+    }
+
+    void notifyColorListeners() {
+        this.colorFieldListeners.forEach(listener -> listener.onColorChanged());
+    }
+
+    interface ColorFieldListener {
+        void onColorChanged();
     }
 }

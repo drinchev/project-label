@@ -44,6 +44,9 @@ public class PluginConfiguration {
     private JCheckBox editorImageInheritCheckbox;
     private TitledSeparator globalPreferencesSectionTitle;
     private TitledSeparator projectPreferencesSectionTitle;
+    private ColorPaletteChooser colorPaletteChooser;
+    private JPanel backgroundColorPanel;
+    private JPanel textColorPanel;
     private final SpinnerNumberModel editorImageBackgroundOpacityModel;
     private final SpinnerNumberModel editorImageBackgroundOpacityModelGlobal;
     private ColorField colorFieldTextColor;
@@ -98,6 +101,9 @@ public class PluginConfiguration {
         this.colorFieldTextColor = new ColorField(textFieldTextColor, panelTextColor, "Text Color");
         this.colorFieldBackgroundColor =
                 new ColorField(textFieldBackgroundColor, panelBackgroundColor, "Background Color");
+        Stream.of(colorFieldTextColor, colorFieldBackgroundColor)
+                .forEach(
+                        colorField -> colorField.addColorFieldListener(this::updateColorPaletteSelectionBasedOnColors));
         this.spinnerFontSizeModel = new SpinnerNumberModel(0, 0, 36, 1);
         this.spinnerFontSize.setModel(this.spinnerFontSizeModel);
 
@@ -148,6 +154,21 @@ public class PluginConfiguration {
                 projectPreferencesSectionTitle.setPreferredSize(preferredSize);
             }
         });
+
+        colorPaletteChooser.addSelectionListener(this::onColorPaletteSelectionChanged);
+    }
+
+    private void onColorPaletteSelectionChanged(ColorPair colorPair) {
+        if (colorPair != null) {
+            colorFieldTextColor.setColor(colorPair.text());
+            colorFieldBackgroundColor.setColor(colorPair.background());
+        }
+    }
+
+    private void updateColorPaletteSelectionBasedOnColors() {
+        if (getTextColor() != null && getBackgroundColor() != null) {
+            colorPaletteChooser.preSelect(new ColorPair(getBackgroundColor(), getTextColor(), null));
+        }
     }
 
     private void updateFontCheckboxDependingStatesAndValues(Object ignore) {
@@ -199,6 +220,7 @@ public class PluginConfiguration {
 
     public void setTextColor(Color color) {
         this.colorFieldTextColor.setColor(color);
+        updateColorPaletteSelectionBasedOnColors();
     }
 
     public Color getTextColor() {
@@ -207,6 +229,7 @@ public class PluginConfiguration {
 
     public void setBackgroundColor(Color color) {
         this.colorFieldBackgroundColor.setColor(color);
+        updateColorPaletteSelectionBasedOnColors();
     }
 
     public Color getBackgroundColor() {
