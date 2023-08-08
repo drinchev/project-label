@@ -3,6 +3,8 @@
 # Project Label Changelog
 
 ## [Unreleased]
+
+## [1.3.0] - 2023-08-08
 - Option to choose colors from good-looking presets (or manually pick colors like before)
 
 ## [1.2.0] - 2023-04-25
@@ -34,7 +36,8 @@
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/drinchev/project-label/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/drinchev/project-label/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/drinchev/project-label/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/drinchev/project-label/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/drinchev/project-label/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/drinchev/project-label/compare/v1.0.0...v1.1.0
