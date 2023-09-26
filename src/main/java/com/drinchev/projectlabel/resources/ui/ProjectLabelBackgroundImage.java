@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
 import com.intellij.util.ui.JBUI;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -24,10 +25,11 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
 import org.jetbrains.annotations.NotNull;
 
 @Service(Level.PROJECT)
-public class ProjectLabelBackgroundImage {
+public final class ProjectLabelBackgroundImage {
 
     public static final int MIN_HEIGHT = 30;
 
@@ -92,7 +94,10 @@ public class ProjectLabelBackgroundImage {
     }
 
     private void setImageToIDE() {
-        PropertiesComponent prop = projectLevelPropertiesComponent();
+        if (project.isDisposed()) {
+            return;
+        }
+        PropertiesComponent prop = project.getService(PropertiesComponent.class);
         String opacity = String.valueOf(preferences.backgroundImageOpacity());
         String imageProp = String.format(
                 "%s,%s,plain,%s",
@@ -109,11 +114,6 @@ public class ProjectLabelBackgroundImage {
         }
     }
 
-    private PropertiesComponent projectLevelPropertiesComponent() {
-        PropertiesComponent prop = project.getService(PropertiesComponent.class);
-        return prop;
-    }
-
     public void updateImage() {
         LOG.info("Updating project label background image.");
         bufferedImage = null;
@@ -122,7 +122,10 @@ public class ProjectLabelBackgroundImage {
     }
 
     public void hideImage() {
-        PropertiesComponent prop = projectLevelPropertiesComponent();
+        if (project.isDisposed()) {
+            return;
+        }
+        PropertiesComponent prop = project.getService(PropertiesComponent.class);
         String editorProp = prop.getValue(IdeBackgroundUtil.EDITOR_PROP, "");
         String frameProp = prop.getValue(IdeBackgroundUtil.FRAME_PROP, "");
         if (!isProjectLabelImage(editorProp, frameProp)) {
@@ -162,8 +165,7 @@ public class ProjectLabelBackgroundImage {
                 Dimension preferredImageDimension = getPreferredImageDimension();
                 BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));
 
-                @SuppressWarnings("UseDPIAwareInsets")
-                final Insets insets = new Insets(
+                @SuppressWarnings("UseDPIAwareInsets") final Insets insets = new Insets(
                         JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
                         JBUI.scale(BORDER_X_MARGIN) + BORDER_X_PADDING,
                         JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
