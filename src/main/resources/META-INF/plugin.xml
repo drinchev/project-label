@@ -10,7 +10,8 @@
         <projectService serviceImplementation="com.drinchev.projectlabel.preferences.ProjectPreferences"/>
         <projectConfigurable id="ProjectLabel" displayName="Project Label"
                              instance="com.drinchev.projectlabel.ProjectLabelConfigurable"/>
-        <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory" order="last"/>
+        <statusBarWidgetFactory implementation="com.drinchev.projectlabel.ProjectLabelWidgetFactory" order="last"
+                                id="ProjectLabelWidget"/>
         <postStartupActivity implementation="com.drinchev.projectlabel.ProjectLabelStartupActivity"/>
     </extensions>
 
