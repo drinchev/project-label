@@ -27,7 +27,7 @@ import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
 @Service(Level.PROJECT)
-public class ProjectLabelBackgroundImage {
+public final class ProjectLabelBackgroundImage {
 
     public static final int MIN_HEIGHT = 30;
 
@@ -92,7 +92,10 @@ public class ProjectLabelBackgroundImage {
     }
 
     private void setImageToIDE() {
-        PropertiesComponent prop = projectLevelPropertiesComponent();
+        if (project.isDisposed()) {
+            return;
+        }
+        PropertiesComponent prop = project.getService(PropertiesComponent.class);
         String opacity = String.valueOf(preferences.backgroundImageOpacity());
         String imageProp = String.format(
                 "%s,%s,plain,%s",
@@ -109,11 +112,6 @@ public class ProjectLabelBackgroundImage {
         }
     }
 
-    private PropertiesComponent projectLevelPropertiesComponent() {
-        PropertiesComponent prop = project.getService(PropertiesComponent.class);
-        return prop;
-    }
-
     public void updateImage() {
         LOG.info("Updating project label background image.");
         bufferedImage = null;
@@ -122,7 +120,10 @@ public class ProjectLabelBackgroundImage {
     }
 
     public void hideImage() {
-        PropertiesComponent prop = projectLevelPropertiesComponent();
+        if (project.isDisposed()) {
+            return;
+        }
+        PropertiesComponent prop = project.getService(PropertiesComponent.class);
         String editorProp = prop.getValue(IdeBackgroundUtil.EDITOR_PROP, "");
         String frameProp = prop.getValue(IdeBackgroundUtil.FRAME_PROP, "");
         if (!isProjectLabelImage(editorProp, frameProp)) {

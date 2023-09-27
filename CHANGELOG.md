@@ -3,6 +3,7 @@
 # Project Label Changelog
 
 ## [Unreleased]
+- Fix a potential issue of plugin crash, when switching projects
 
 ## [1.3.0] - 2023-08-08
 - Option to choose colors from good-looking presets (or manually pick colors like before)

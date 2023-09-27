@@ -12,7 +12,7 @@ import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 
 @Service(Level.PROJECT)
-public class ProjectLabel {
+public final class ProjectLabel {
 
     private final Project project;
 
