@@ -3,6 +3,8 @@
 # Project Label Changelog
 
 ## [Unreleased]
+### Fixed
+- Plugin warning
 
 ## [1.3.1] - 2023-09-27
 - Fix a potential issue of plugin crash, when switching projects
