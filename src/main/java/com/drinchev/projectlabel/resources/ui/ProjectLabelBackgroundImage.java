@@ -13,7 +13,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil;
 import com.intellij.util.ui.JBUI;
-
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -25,7 +24,6 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
 import org.jetbrains.annotations.NotNull;
 
 @Service(Level.PROJECT)
@@ -165,7 +163,8 @@ public final class ProjectLabelBackgroundImage {
                 Dimension preferredImageDimension = getPreferredImageDimension();
                 BufferedImage rawLabelImage = renderer.renderLabelAsImage(preferredImageDimension, new Dimension(0, 0));
 
-                @SuppressWarnings("UseDPIAwareInsets") final Insets insets = new Insets(
+                @SuppressWarnings("UseDPIAwareInsets")
+                final Insets insets = new Insets(
                         JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
                         JBUI.scale(BORDER_X_MARGIN) + BORDER_X_PADDING,
                         JBUI.scale(BORDER_Y_MARGIN) + BORDER_Y_PADDING,
